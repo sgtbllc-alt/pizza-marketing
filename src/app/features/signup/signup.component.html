@@ -1,0 +1,64 @@
+<main class="signup-page">
+  <section class="signup-hero" aria-labelledby="signup-title">
+    <div class="brand-mark" aria-hidden="true">
+      <span class="pizza-slice"></span>
+    </div>
+
+    <p class="eyebrow">Pizza perks by text</p>
+    <h1 id="signup-title">Join the loyalty list</h1>
+    <p class="intro">Get pizza deals, rewards, and order updates from MMK South SJ.</p>
+
+    <form [formGroup]="signupForm" (ngSubmit)="submit()" class="signup-form" novalidate>
+      <label class="field">
+        <span>Name</span>
+        <input
+          type="text"
+          formControlName="name"
+          autocomplete="name"
+          placeholder="Your name"
+          [attr.aria-invalid]="hasError('name')"
+        />
+        @if (hasError('name')) {
+          <small>Please enter your name.</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Phone</span>
+        <input
+          type="tel"
+          formControlName="phone"
+          autocomplete="tel"
+          inputmode="tel"
+          placeholder="(408) 555-0123"
+          [attr.aria-invalid]="hasError('phone')"
+        />
+        @if (hasError('phone')) {
+          <small>Enter a valid phone number.</small>
+        }
+      </label>
+
+      <label class="consent">
+        <input type="checkbox" formControlName="smsConsent" />
+        <span>I agree to receive SMS marketing messages and understand message/data rates may apply.</span>
+      </label>
+      @if (hasError('smsConsent')) {
+        <small class="consent-error">SMS consent is required.</small>
+      }
+
+      <button type="submit" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          Signing up...
+        } @else {
+          Sign up
+        }
+      </button>
+
+      @if (statusMessage()) {
+        <p class="status" [class.success]="status() === 'success'" [class.error]="status() === 'error'">
+          {{ statusMessage() }}
+        </p>
+      }
+    </form>
+  </section>
+</main>

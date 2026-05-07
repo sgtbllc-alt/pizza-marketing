@@ -2,6 +2,31 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.10.
 
+## Signup MVP
+
+The app opens to a mobile-first standalone signup page at `/`. It posts to the Supabase Edge Function:
+
+```text
+POST {supabaseUrl}/functions/v1/signup-user
+```
+
+Configure the frontend values in:
+
+- `src/environments/environment.ts`
+- `src/environments/environment.prod.ts`
+
+The request body sent by the Angular service is:
+
+```json
+{
+  "name": "Customer Name",
+  "phone": "(408) 555-0123",
+  "smsConsent": true
+}
+```
+
+The Edge Function should continue handling the trusted flow from Supabase to Twilio.
+
 ## Development server
 
 To start a local development server, run:
