@@ -26,7 +26,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run build -- --configuration production --base-href=/
+      - run: npm run build -- --configuration production --base-href=/pizza-marketing/
 
       - uses: actions/upload-pages-artifact@v3
         with:
