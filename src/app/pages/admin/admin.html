@@ -1,0 +1,17 @@
+<main class="admin-page">
+  <section class="admin-shell" aria-labelledby="admin-title">
+    <p class="eyebrow">Admin</p>
+    <h1 id="admin-title">Dashboard</h1>
+    <p class="intro">Choose a tool to manage orders and offers.</p>
+
+    <div class="admin-grid">
+      @for (card of adminCards; track card.link) {
+        <a class="admin-card" [routerLink]="card.link">
+          <span class="card-title">{{ card.title }}</span>
+          <span class="card-description">{{ card.description }}</span>
+          <span class="card-action">{{ card.action }}</span>
+        </a>
+      }
+    </div>
+  </section>
+</main>

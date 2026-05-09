@@ -1,0 +1,118 @@
+<main class="admin-deals-page">
+  <section class="deals-shell" aria-labelledby="admin-deals-title">
+    <p class="eyebrow">Admin</p>
+    <h1 id="admin-deals-title">Deals</h1>
+    <p class="intro">Create, edit, and control which offers are shown on the public deals page.</p>
+
+    <form [formGroup]="dealForm" (ngSubmit)="submit()" class="deal-form" novalidate>
+      <div class="form-heading">
+        <h2>{{ editingDealId() ? 'Edit deal' : 'Add deal' }}</h2>
+        @if (editingDealId()) {
+          <button type="button" class="ghost-button" (click)="cancelEdit()">Cancel</button>
+        }
+      </div>
+
+      <label class="field">
+        <span>Title</span>
+        <input type="text" formControlName="title" placeholder="Large Pepperoni Special" />
+        @if (hasError('title')) {
+          <small>Title is required.</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Description</span>
+        <textarea formControlName="description" rows="3" placeholder="Describe the deal customers will see."></textarea>
+        @if (hasError('description')) {
+          <small>Description is required.</small>
+        }
+      </label>
+
+      <div class="price-grid">
+        <label class="field">
+          <span>Original price</span>
+          <input type="number" formControlName="original_price" min="0.01" step="0.01" placeholder="24.99" />
+          @if (hasError('original_price')) {
+            <small>Use a price greater than 0.</small>
+          }
+        </label>
+
+        <label class="field">
+          <span>Discounted price</span>
+          <input type="number" formControlName="discounted_price" min="0.01" step="0.01" placeholder="18.99" />
+          @if (hasError('discounted_price')) {
+            <small>Discounted price is required.</small>
+          }
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Promo code</span>
+        <input type="text" formControlName="promo_code" placeholder="PIZZA10" />
+      </label>
+
+      <label class="active-toggle">
+        <input type="checkbox" formControlName="active" />
+        <span>Active on public deals page</span>
+      </label>
+
+      <button type="submit" class="primary-button" [disabled]="isSaving()">
+        @if (isSaving()) {
+          Saving...
+        } @else if (editingDealId()) {
+          Update deal
+        } @else {
+          Add deal
+        }
+      </button>
+    </form>
+
+    @if (statusMessage()) {
+      <p class="status" [class.success]="status() === 'success'" [class.error]="status() === 'error'">
+        {{ statusMessage() }}
+      </p>
+    }
+
+    <section class="deals-list-section" aria-labelledby="all-deals-title">
+      <h2 id="all-deals-title">All deals</h2>
+
+      @if (status() === 'loading') {
+        <p class="empty-state">Loading deals...</p>
+      } @else if (deals().length === 0) {
+        <p class="empty-state">No deals yet. Add the first one above.</p>
+      } @else {
+        <div class="deals-list">
+          @for (deal of deals(); track deal.id) {
+        <article class="deal-card">
+          <div>
+            <span class="deal-tag" [class.inactive]="!deal.active">{{ deal.active ? 'Active' : 'Inactive' }}</span>
+            <h2>{{ deal.title }}</h2>
+            <p>{{ deal.description }}</p>
+            @if (deal.promo_code) {
+              <p class="promo-code">Code {{ deal.promo_code }}</p>
+            }
+          </div>
+
+          <div class="deal-meta">
+            <div class="price-row">
+              @if (deal.original_price !== null) {
+                <span class="original-price">{{ formatPrice(deal.original_price) }}</span>
+              }
+              <strong>{{ formatPrice(deal.discounted_price) }}</strong>
+            </div>
+
+            <div class="deal-actions">
+              <button type="button" class="ghost-button" (click)="toggleActive(deal)">
+                {{ deal.active ? 'Deactivate' : 'Activate' }}
+              </button>
+              <button type="button" class="ghost-button" (click)="editDeal(deal)">Edit</button>
+              <button type="button" class="danger-button" (click)="deleteDeal(deal)">Delete</button>
+            </div>
+          </div>
+        </article>
+      }
+        </div>
+      }
+    </section>
+  </section>
+</main>

@@ -1,0 +1,46 @@
+<main class="deals-page">
+  <header class="customer-topbar">
+    <a class="brand-link" routerLink="/">Mountain Mike South SJ</a>
+    <nav aria-label="Customer navigation">
+      <a routerLink="/">Sign up</a>
+      <a class="call-pill" href="tel:4086224755">Call</a>
+    </nav>
+  </header>
+
+  <section class="deals-hero" aria-labelledby="deals-title">
+    <p class="eyebrow">Hot deals</p>
+    <h1 id="deals-title">Today's deals</h1>
+    <p class="intro">Grab a pizza special and bring dinner home easy.</p>
+
+    <address class="contact-card">
+      <a class="phone-link" href="tel:4086224755">408-622-4755</a>
+      <span>4116 Monterey Rd, San Jose, CA 95111</span>
+    </address>
+
+    @if (status() === 'loading') {
+      <p class="status-card">Loading deals...</p>
+    } @else if (status() === 'error') {
+      <p class="status-card error">{{ statusMessage() }}</p>
+    } @else if (deals().length === 0) {
+      <p class="status-card">No active deals right now. Call us for today's specials.</p>
+    } @else {
+      <div class="deals-list">
+        @for (deal of deals(); track deal.id) {
+        <article class="deal-card">
+          @if (deal.promo_code) {
+            <span class="deal-tag">Code {{ deal.promo_code }}</span>
+          }
+          <h2>{{ deal.title }}</h2>
+          <p>{{ deal.description }}</p>
+          <div class="price-row">
+            @if (deal.original_price !== null) {
+              <span class="original-price">{{ formatPrice(deal.original_price) }}</span>
+            }
+            <strong>{{ formatPrice(deal.discounted_price) }}</strong>
+          </div>
+        </article>
+      }
+      </div>
+    }
+  </section>
+</main>

@@ -1,12 +1,25 @@
 <main class="signup-page">
+  <header class="customer-topbar">
+    <a class="brand-link" routerLink="/">Mountain Mike South SJ</a>
+    <nav aria-label="Customer navigation">
+      <a routerLink="/deals">Deals</a>
+      <a class="call-pill" href="tel:4086224755">Call</a>
+    </nav>
+  </header>
+
   <section class="signup-hero" aria-labelledby="signup-title">
     <div class="brand-mark" aria-hidden="true">
       <span class="pizza-slice"></span>
     </div>
 
-    <p class="eyebrow">Pizza perks by text</p>
+    <p class="eyebrow">South San Jose</p>
     <h1 id="signup-title">Join the loyalty list</h1>
-    <p class="intro">Get pizza deals, rewards, and order updates from MMK South SJ.</p>
+    <p class="intro">Get pizza deals, rewards, and order updates from Mountain Mike South SJ.</p>
+
+    <address class="contact-card">
+      <a class="phone-link" href="tel:4086224755">408-622-4755</a>
+      <span>4116 Monterey Rd, San Jose, CA 95111</span>
+    </address>
 
     <form [formGroup]="signupForm" (ngSubmit)="submit()" class="signup-form" novalidate>
       <label class="field">

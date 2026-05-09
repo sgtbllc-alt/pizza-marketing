@@ -1,0 +1,53 @@
+<main class="add-order-page">
+  <section class="order-panel" aria-labelledby="add-order-title">
+    <p class="eyebrow">Admin</p>
+    <h1 id="add-order-title">Add order</h1>
+
+    <form [formGroup]="orderForm" (ngSubmit)="submit()" class="order-form" novalidate>
+      <label class="field">
+        <span>Phone number</span>
+        <input
+          type="tel"
+          formControlName="phone"
+          autocomplete="tel"
+          inputmode="tel"
+          placeholder="(408) 555-0123"
+          [attr.aria-invalid]="hasError('phone')"
+        />
+        @if (hasError('phone')) {
+          <small>Enter a valid phone number.</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Amount</span>
+        <input
+          type="number"
+          formControlName="amount"
+          inputmode="decimal"
+          min="0.01"
+          step="0.01"
+          placeholder="24.99"
+          [attr.aria-invalid]="hasError('amount')"
+        />
+        @if (hasError('amount')) {
+          <small>Enter an order amount greater than 0.</small>
+        }
+      </label>
+
+      <button type="submit" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          Adding order...
+        } @else {
+          Add order
+        }
+      </button>
+
+      @if (statusMessage()) {
+        <p class="status" [class.success]="status() === 'success'" [class.error]="status() === 'error'">
+          {{ statusMessage() }}
+        </p>
+      }
+    </form>
+  </section>
+</main>
