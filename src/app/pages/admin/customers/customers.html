@@ -1,0 +1,57 @@
+<main class="customers-page">
+  <section class="customers-shell" aria-labelledby="customers-title">
+    <a class="back-link" routerLink="/admin">Back to admin</a>
+
+    <p class="eyebrow">Admin</p>
+    <h1 id="customers-title">All Customers</h1>
+
+    <div class="summary-card">
+      <span>Total customers</span>
+      <strong>{{ customers().length }}</strong>
+    </div>
+
+    <label class="search-field">
+      <span>Search customers</span>
+      <input
+        type="search"
+        placeholder="Search by name or phone"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="updateSearchTerm($event)"
+      />
+    </label>
+
+    @if (status() === 'loading') {
+      <p class="state-card">Loading customers...</p>
+    } @else if (status() === 'error') {
+      <p class="state-card error">{{ statusMessage() }}</p>
+    } @else if (customers().length === 0) {
+      <p class="state-card">No customers yet.</p>
+    } @else if (filteredCustomers().length === 0) {
+      <p class="state-card">No customers match your search.</p>
+    } @else {
+      <div class="customer-table-wrap">
+        <div class="customer-table" role="table" aria-label="All customers">
+          <div class="customer-row table-head" role="row">
+            <span role="columnheader">Customer</span>
+            <span role="columnheader">Phone</span>
+            <span role="columnheader">Signed up</span>
+            <span role="columnheader">Orders</span>
+            <span role="columnheader">Spend</span>
+            <span role="columnheader">Entries</span>
+          </div>
+
+          @for (customer of filteredCustomers(); track customer.id) {
+            <div class="customer-row" role="row">
+              <span class="customer-name" role="cell">{{ customer.name || 'No name' }}</span>
+              <a role="cell" href="tel:{{ customer.phone }}">{{ customer.phone }}</a>
+              <span role="cell">{{ formatDate(customer.created_at) }}</span>
+              <strong role="cell">{{ customer.total_orders }}</strong>
+              <strong role="cell">{{ formatCurrency(customer.total_spend) }}</strong>
+              <strong role="cell">{{ customer.total_entries }}</strong>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </section>
+</main>

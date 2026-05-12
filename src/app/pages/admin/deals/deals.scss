@@ -17,6 +17,26 @@
   margin: 0 auto;
 }
 
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 18px;
+  color: #b03f2f;
+  font-size: 0.92rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.back-link::before {
+  content: '←';
+  margin-right: 7px;
+}
+
+.back-link:focus-visible {
+  outline: 4px solid rgba(199, 66, 47, 0.16);
+  outline-offset: 3px;
+}
+
 .eyebrow {
   margin: 0 0 10px;
   color: #b03f2f;
@@ -40,6 +60,37 @@ h1 {
   line-height: 1.55;
 }
 
+.page-heading {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+.heading-action {
+  width: 100%;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  align-items: end;
+  padding: 16px;
+  background: rgba(36, 26, 23, 0.54);
+}
+
+.deal-modal {
+  width: min(100%, 640px);
+  max-height: min(86dvh, 760px);
+  overflow: auto;
+  margin: 0 auto;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+}
+
 .deal-form,
 .deal-card,
 .empty-state,
@@ -53,7 +104,7 @@ h1 {
   display: grid;
   gap: 16px;
   padding: 20px;
-  border: 1px solid rgba(36, 26, 23, 0.1);
+  border: 0;
 }
 
 .form-heading {
@@ -270,6 +321,25 @@ strong {
 @media (min-width: 680px) {
   .admin-deals-page {
     padding: 44px;
+  }
+
+  .page-heading {
+    grid-template-columns: 1fr auto;
+    margin-bottom: 24px;
+  }
+
+  .heading-action {
+    width: auto;
+    min-width: 140px;
+  }
+
+  .modal-backdrop {
+    align-items: center;
+    padding: 32px;
+  }
+
+  .deal-form {
+    padding: 28px;
   }
 
   .price-grid {

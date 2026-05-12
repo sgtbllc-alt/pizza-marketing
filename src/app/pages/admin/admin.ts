@@ -21,5 +21,17 @@ export class Admin {
       link: '/admin/deals',
       action: 'View deals',
     },
+    {
+      title: 'All Customers',
+      description: 'View signed-up customers, orders, and entries.',
+      link: '/admin/customers',
+      action: 'View customers',
+    },
+    {
+      title: 'Send Deal SMS',
+      description: 'Pick or create a deal and send it to customers by SMS.',
+      link: '/admin/send-deal',
+      action: 'Send SMS',
+    },
   ];
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 import { Deal, DealInput } from '../../../core/models/deal.model';
 import { DealService } from '../../../core/services/deal.service';
@@ -8,7 +9,7 @@ type AdminDealsStatus = 'idle' | 'loading' | 'saving' | 'error' | 'success';
 
 @Component({
   selector: 'app-admin-deals',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './deals.html',
   styleUrl: './deals.scss',
 })
@@ -24,6 +25,7 @@ export class AdminDeals implements OnInit {
   protected readonly status = signal<AdminDealsStatus>('idle');
   protected readonly statusMessage = signal('');
   protected readonly editingDealId = signal<string | null>(null);
+  protected readonly isDealModalOpen = signal(false);
   protected readonly isSaving = computed(() => this.status() === 'saving');
 
   protected readonly dealForm = this.formBuilder.group({
@@ -63,11 +65,19 @@ export class AdminDeals implements OnInit {
 
       this.status.set('success');
       this.resetForm();
+      this.isDealModalOpen.set(false);
       await this.loadDeals(false);
     } catch (error) {
       this.status.set('error');
       this.statusMessage.set(error instanceof Error ? error.message : 'Unable to save deal');
     }
+  }
+
+  protected openAddDealModal(): void {
+    this.resetForm();
+    this.status.set('idle');
+    this.statusMessage.set('');
+    this.isDealModalOpen.set(true);
   }
 
   protected editDeal(deal: Deal): void {
@@ -82,10 +92,12 @@ export class AdminDeals implements OnInit {
       promo_code: deal.promo_code ?? '',
       active: deal.active,
     });
+    this.isDealModalOpen.set(true);
   }
 
-  protected cancelEdit(): void {
+  protected closeDealModal(): void {
     this.resetForm();
+    this.isDealModalOpen.set(false);
     this.status.set('idle');
     this.statusMessage.set('');
   }

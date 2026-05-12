@@ -40,7 +40,7 @@ export class AdminLogin {
 
     try {
       await this.adminAuthService.login(email.trim(), password);
-      await this.router.navigateByUrl('/admin/add-order');
+      await this.router.navigateByUrl('/admin');
     } catch (error) {
       this.status.set('error');
       this.errorMessage.set(error instanceof Error ? error.message : 'Login failed');

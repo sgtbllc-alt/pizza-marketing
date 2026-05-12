@@ -2,27 +2,25 @@
   display: block;
   min-height: 100dvh;
   color: #1f1814;
-  background: #004438;
+  background: #004837;
 }
 
 .signup-page {
   min-height: 100dvh;
-  display: grid;
-  align-content: start;
-  gap: 24px;
-  padding: 24px 16px;
-  background:
-    linear-gradient(178deg, transparent 0 50%, #fff5d7 50% 100%),
-    linear-gradient(135deg, #004438 0%, #005846 58%, #b2292e 58%, #b2292e 100%);
+  background: linear-gradient(180deg, #00543f 0%, #006047 38%, #fff4d8 38%);
 }
 
 .customer-topbar {
-  width: min(100%, 960px);
+  position: relative;
+  z-index: 3;
+  width: min(100%, 1100px);
   display: flex;
   gap: 14px;
   align-items: center;
   justify-content: space-between;
   margin: 0 auto;
+  padding: 20px 24px 0;
+  box-sizing: border-box;
   color: #ffffff;
 }
 
@@ -51,23 +49,25 @@ nav a {
 }
 
 nav .call-pill {
-  border-color: #f5d93f;
-  background: #f5d93f;
-  color: #004438;
+  border-color: #f6d83b;
+  background: #f6d83b;
+  color: #004837;
 }
 
-.signup-hero {
-  width: min(100%, 430px);
+.hero {
+  max-width: 1100px;
   margin: 0 auto;
+  padding: 32px 24px 48px;
+  box-sizing: border-box;
 }
 
 .brand-mark {
-  width: 68px;
-  height: 68px;
+  width: 64px;
+  height: 64px;
   display: grid;
   place-items: center;
-  border: 3px solid #f5d93f;
-  border-radius: 8px;
+  border: 3px solid #f6d83b;
+  border-radius: 12px;
   background: #b2292e;
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
 }
@@ -75,72 +75,139 @@ nav .call-pill {
 .pizza-slice {
   width: 0;
   height: 0;
-  border-left: 21px solid transparent;
-  border-right: 21px solid transparent;
-  border-top: 44px solid #f5d93f;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 42px solid #f6d83b;
   filter: drop-shadow(0 4px 0 #ffffff);
   transform: rotate(-18deg);
 }
 
 .eyebrow {
-  margin: 28px 0 10px;
-  color: #f5d93f;
+  margin: 22px 0 10px;
+  color: #f6d83b;
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 850;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-h1 {
+.hero-title {
+  max-width: 720px;
   margin: 0;
-  max-width: 9ch;
   color: #ffffff;
-  font-size: clamp(2.65rem, 16vw, 4.5rem);
+  font-size: clamp(3.2rem, 8vw, 6.5rem);
   line-height: 0.95;
   letter-spacing: 0;
   text-shadow: 0 3px 0 rgba(178, 41, 46, 0.9);
 }
 
-.intro {
-  margin: 18px 0 26px;
-  max-width: 31ch;
-  color: #fff4d3;
-  font-size: 1rem;
-  line-height: 1.55;
+.mobile-title {
+  display: none;
+}
+
+.hero-subtitle {
+  max-width: 520px;
+  margin: 18px 0 0;
+  color: #fff4d8;
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  line-height: 1.45;
+}
+
+.signup-content {
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 32px;
+  align-items: start;
+  box-sizing: border-box;
+  margin: -32px auto 0;
+  padding: 0 24px 48px;
+}
+
+.signup-details {
+  display: grid;
+  gap: 0;
+}
+
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.benefit-card {
+  min-height: 56px;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: center;
+  box-sizing: border-box;
+  border: 2px solid #f6d83b;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #004837;
+  padding: 14px 18px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.2;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.1);
+}
+
+.benefit-card span {
+  font-size: 1.35rem;
 }
 
 .contact-card {
   display: grid;
-  gap: 8px;
+  gap: 12px;
   justify-items: center;
-  margin: 0 0 26px;
-  padding: 16px;
-  border: 2px solid #f5d93f;
-  border-radius: 8px;
+  margin-top: 24px;
+  padding: 24px;
+  border: 2px solid #f6d83b;
+  border-radius: 14px;
   background: #ffffff;
-  color: #004438;
-  font-size: 1.06rem;
+  color: #004837;
+  font-size: 1.12rem;
   font-style: normal;
   line-height: 1.4;
   text-align: center;
   box-shadow: 0 14px 36px rgba(64, 41, 29, 0.08);
 }
 
-.phone-link {
-  color: #004438;
-  justify-self: center;
-  border-radius: 8px;
-  background: #f5d93f;
-  padding: 10px 14px;
-  font-size: 1.2rem;
+.contact-card span {
+  font-weight: 850;
+}
+
+.store-phone {
+  display: inline-block;
+  width: fit-content;
+  border-radius: 10px;
+  background: #f6d83b;
+  color: #004837;
+  padding: 10px 24px;
+  font-size: 1.5rem;
   font-weight: 900;
   text-decoration: none;
   box-shadow: 0 12px 24px rgba(0, 68, 56, 0.16);
 }
 
-.phone-link:focus-visible {
-  outline: 4px solid rgba(199, 66, 47, 0.2);
+.store-phone:focus-visible,
+nav a:focus-visible,
+.brand-link:focus-visible {
+  outline: 4px solid rgba(246, 216, 59, 0.38);
   outline-offset: 3px;
+}
+
+.signup-card {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28px;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
 }
 
 .signup-form {
@@ -151,7 +218,7 @@ h1 {
 .field {
   display: grid;
   gap: 8px;
-  font-weight: 700;
+  font-weight: 750;
 }
 
 input[type='text'],
@@ -160,8 +227,8 @@ input[type='tel'] {
   min-height: 54px;
   box-sizing: border-box;
   border: 1px solid rgba(36, 26, 23, 0.17);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.86);
+  border-radius: 10px;
+  background: #ffffff;
   color: #241a17;
   font: inherit;
   font-weight: 600;
@@ -169,15 +236,13 @@ input[type='tel'] {
   outline: none;
   transition:
     border-color 140ms ease,
-    box-shadow 140ms ease,
-    background 140ms ease;
+    box-shadow 140ms ease;
 }
 
 input[type='text']:focus,
 input[type='tel']:focus {
-  border-color: #c7422f;
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(199, 66, 47, 0.13);
+  border-color: #b2292e;
+  box-shadow: 0 0 0 4px rgba(178, 41, 46, 0.13);
 }
 
 input[aria-invalid='true'] {
@@ -200,11 +265,19 @@ small {
   line-height: 1.42;
 }
 
+.sms-note {
+  display: block;
+  margin-top: 4px;
+  color: #6a5d57;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
 input[type='checkbox'] {
   width: 20px;
   height: 20px;
   margin: 1px 0 0;
-  accent-color: #c7422f;
+  accent-color: #b2292e;
 }
 
 .consent-error {
@@ -214,7 +287,7 @@ input[type='checkbox'] {
 button {
   min-height: 54px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #b2292e;
   color: #ffffff;
   font: inherit;
@@ -231,7 +304,7 @@ button:disabled {
 
 .status {
   margin: 0;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 12px 14px;
   font-size: 0.92rem;
   font-weight: 700;
@@ -248,35 +321,121 @@ button:disabled {
   color: #b42318;
 }
 
-@media (min-width: 760px) {
+@media (max-width: 768px) {
   .signup-page {
-    padding: 44px;
-    align-content: center;
+    background: linear-gradient(180deg, #00543f 0%, #006047 44%, #fff4d8 44%);
   }
 
-  .signup-hero {
-    width: min(100%, 860px);
+  .customer-topbar {
+    padding: 12px 20px 0;
+  }
+
+  .brand-link {
+    max-width: 11ch;
+  }
+
+  nav {
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+
+  .hero {
+    position: relative;
+    z-index: 1;
+    margin-top: -56px;
+    padding: 12px 20px 14px;
+  }
+
+  .brand-mark {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+  }
+
+  .pizza-slice {
+    border-left-width: 15px;
+    border-right-width: 15px;
+    border-top-width: 32px;
+  }
+
+  .eyebrow {
+    margin: 10px 0 8px;
+  }
+
+  .hero-title {
+    font-size: clamp(3rem, 15vw, 4.75rem);
+    line-height: 0.95;
+  }
+
+  .desktop-title {
+    display: none;
+  }
+
+  .mobile-title {
+    display: inline;
+  }
+
+  .hero-subtitle {
+    max-width: 34ch;
+    margin-top: 12px;
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .signup-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: -8px;
+    padding: 0 20px 18px;
+  }
+
+  .benefits {
     display: grid;
-    grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1fr);
-    gap: 44px;
-    align-items: end;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
   }
 
-  .brand-mark,
-  .eyebrow,
-  h1,
-  .intro,
+  .benefit-card {
+    min-height: 92px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 6px;
+    padding: 10px 8px;
+    font-size: 0.78rem;
+    text-align: center;
+  }
+
+  .benefit-card span {
+    font-size: 1.35rem;
+  }
+
   .contact-card {
-    grid-column: 1;
+    gap: 6px;
+    margin-top: 4px;
+    padding: 12px 14px;
+    font-size: 1rem;
+    line-height: 1.28;
+  }
+
+  .store-phone {
+    width: fit-content;
+    padding: 8px 20px;
+    font-size: 1.28rem;
+  }
+
+  .signup-card {
+    width: 100%;
+    padding: 18px;
   }
 
   .signup-form {
-    grid-column: 2;
-    grid-row: 1 / span 5;
-    padding: 28px;
-    border: 2px solid rgba(0, 68, 56, 0.14);
-    border-radius: 8px;
-    background: #ffffff;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+    gap: 12px;
+  }
+
+  input[type='text'],
+  input[type='tel'],
+  button {
+    min-height: 50px;
   }
 }

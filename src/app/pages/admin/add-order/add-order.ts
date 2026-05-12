@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 import { OrderService } from '../../../core/services/order.service';
 
@@ -7,7 +8,7 @@ type AddOrderStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 @Component({
   selector: 'app-add-order',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './add-order.html',
   styleUrl: './add-order.scss',
 })
@@ -32,12 +33,19 @@ export class AddOrder {
     }
 
     const { phone, amount } = this.orderForm.getRawValue();
+    const normalizedPhone = this.normalizePhone(phone);
+
+    if (!normalizedPhone) {
+      this.status.set('error');
+      this.statusMessage.set('Please enter a valid 10-digit US phone number.');
+      return;
+    }
 
     this.status.set('submitting');
     this.statusMessage.set('');
 
     try {
-      await this.orderService.addOrder(phone.trim(), amount);
+      await this.orderService.addOrder(normalizedPhone, amount);
       this.status.set('success');
       this.statusMessage.set('Order added successfully.');
       this.orderForm.reset();
@@ -51,5 +59,19 @@ export class AddOrder {
     const control = this.orderForm.controls[controlName];
 
     return control.invalid && (control.dirty || control.touched);
+  }
+
+  private normalizePhone(phone: string): string | null {
+    const digits = phone.replace(/\D/g, '');
+
+    if (digits.length === 10) {
+      return `+1${digits}`;
+    }
+
+    if (digits.length === 11 && digits.startsWith('1')) {
+      return `+${digits}`;
+    }
+
+    return null;
   }
 }

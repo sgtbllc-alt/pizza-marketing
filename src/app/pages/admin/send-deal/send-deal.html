@@ -1,0 +1,128 @@
+<main class="send-deal-page">
+  <section class="send-deal-shell" aria-labelledby="send-deal-title">
+    <a class="back-link" routerLink="/admin">Back to admin</a>
+
+    <p class="eyebrow">Admin</p>
+    <h1 id="send-deal-title">Send Deal SMS</h1>
+
+    @if (status() === 'loading') {
+      <p class="state-card">Loading deals...</p>
+    } @else {
+      <form [formGroup]="smsForm" class="sms-form" novalidate>
+        <section class="form-section" aria-labelledby="recipient-title">
+          <h2 id="recipient-title">Recipients</h2>
+          <p class="recipient-note">This message will go to all opted-in customers.</p>
+        </section>
+
+        <section class="form-section" aria-labelledby="deal-selection-title">
+          <h2 id="deal-selection-title">Deal Selection</h2>
+          <label class="radio-row">
+            <input type="radio" formControlName="deal_mode" value="existing" />
+            <span>Pick existing deal</span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" formControlName="deal_mode" value="new" />
+            <span>Create new deal</span>
+          </label>
+
+          @if (dealMode() === 'existing') {
+            <label class="field">
+              <span>Deal</span>
+              <select formControlName="deal_id">
+                @for (deal of deals(); track deal.id) {
+                  <option [value]="deal.id">{{ deal.title }}</option>
+                }
+              </select>
+            </label>
+
+            @if (selectedDeal()) {
+              <article class="deal-preview">
+                <h3>{{ selectedDeal()?.title }}</h3>
+                <p>{{ selectedDeal()?.description }}</p>
+                @if (selectedDeal()?.promo_code) {
+                  <span>Code {{ selectedDeal()?.promo_code }}</span>
+                }
+                <strong>{{ formatPrice(selectedDeal()?.discounted_price) }}</strong>
+              </article>
+            }
+          } @else {
+            <div class="new-deal-fields">
+              <label class="field">
+                <span>Title</span>
+                <input type="text" formControlName="title" placeholder="Large Pepperoni Special" />
+              </label>
+              <label class="field">
+                <span>Description</span>
+                <textarea formControlName="description" rows="3" placeholder="Describe the deal."></textarea>
+              </label>
+              <label class="field">
+                <span>Promo code</span>
+                <input type="text" formControlName="promo_code" placeholder="PIZZA10" />
+              </label>
+              <div class="price-grid">
+                <label class="field">
+                  <span>Original price</span>
+                  <input type="number" formControlName="original_price" min="0.01" step="0.01" placeholder="24.99" />
+                </label>
+                <label class="field">
+                  <span>Discounted price</span>
+                  <input type="number" formControlName="discounted_price" min="0.01" step="0.01" placeholder="18.99" />
+                </label>
+              </div>
+              <label class="check-row">
+                <input type="checkbox" formControlName="active" />
+                <span>Active</span>
+              </label>
+            </div>
+          }
+        </section>
+
+        <section class="form-section" aria-labelledby="preview-title">
+          <h2 id="preview-title">SMS Preview</h2>
+          <label class="field">
+            <span>Message text</span>
+            <textarea formControlName="message" rows="5" placeholder="Write the SMS text to send."></textarea>
+          </label>
+        </section>
+
+        <button type="button" class="primary-button" [disabled]="isSending()" (click)="send()">
+          @if (isSending()) {
+            Sending...
+          } @else {
+            Send deal SMS
+          }
+        </button>
+      </form>
+    }
+
+    @if (statusMessage()) {
+      <p class="state-card" [class.success]="status() === 'success'" [class.error]="status() === 'error'">
+        {{ statusMessage() }}
+      </p>
+    }
+
+    @if (result()) {
+      <section class="result-card" aria-labelledby="result-title">
+        <h2 id="result-title">Results</h2>
+        <div class="result-grid">
+          <div>
+            <span>Total sent</span>
+            <strong>{{ result()?.total_sent }}</strong>
+          </div>
+          <div>
+            <span>Total failed</span>
+            <strong>{{ result()?.total_failed }}</strong>
+          </div>
+        </div>
+
+        @if (result()?.errors?.length) {
+          <ul class="error-list">
+            @for (error of result()?.errors; track error) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        }
+      </section>
+    }
+  </section>
+</main>

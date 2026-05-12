@@ -1,6 +1,6 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { MarketingApiService } from '../../services/marketing-api.service';
 
@@ -8,13 +8,14 @@ type SignupStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 @Component({
   selector: 'app-signup',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })
-export class SignupComponent {
+export class SignupComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly marketingApi = inject(MarketingApiService);
+  private readonly router = inject(Router);
 
   protected readonly status = signal<SignupStatus>('idle');
   protected readonly statusMessage = signal('');
@@ -26,6 +27,12 @@ export class SignupComponent {
     smsConsent: [false, [Validators.requiredTrue]],
   });
 
+  ngOnInit(): void {
+    if (localStorage.getItem('customer_signed_up') === 'true') {
+      void this.router.navigate(['/deals']);
+    }
+  }
+
   protected submit(): void {
     this.signupForm.markAllAsTouched();
 
@@ -34,6 +41,13 @@ export class SignupComponent {
     }
 
     const { name, phone, smsConsent } = this.signupForm.getRawValue();
+    const normalizedPhone = this.normalizePhone(phone);
+
+    if (!normalizedPhone) {
+      this.status.set('error');
+      this.statusMessage.set('Please enter a valid 10-digit US phone number.');
+      return;
+    }
 
     this.status.set('submitting');
     this.statusMessage.set('');
@@ -41,14 +55,17 @@ export class SignupComponent {
     this.marketingApi
       .signupUser({
         name: name.trim(),
-        phone: phone.trim(),
+        phone: normalizedPhone,
         smsConsent,
       })
       .subscribe({
         next: (response) => {
+          localStorage.setItem('customer_signed_up', 'true');
+          localStorage.setItem('customer_phone', normalizedPhone);
           this.status.set('success');
           this.statusMessage.set(response.message || 'You are signed up. Check your phone for a text from us.');
-          this.signupForm.reset();
+          this.signupForm.reset({ name: '', phone: '', smsConsent: false });
+          void this.router.navigate(['/deals']);
         },
         error: (error: Error) => {
           this.status.set('error');
@@ -61,5 +78,19 @@ export class SignupComponent {
     const control = this.signupForm.controls[controlName];
 
     return control.invalid && (control.dirty || control.touched);
+  }
+
+  private normalizePhone(phone: string): string | null {
+    const digits = phone.replace(/\D/g, '');
+
+    if (digits.length === 10) {
+      return `+1${digits}`;
+    }
+
+    if (digits.length === 11 && digits.startsWith('1')) {
+      return `+${digits}`;
+    }
+
+    return null;
   }
 }

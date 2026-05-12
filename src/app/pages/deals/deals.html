@@ -1,8 +1,8 @@
 <main class="deals-page">
   <header class="customer-topbar">
-    <a class="brand-link" routerLink="/">Mountain Mike South SJ</a>
+    <a class="brand-link" routerLink="/">Mountain Mike's San Jose</a>
     <nav aria-label="Customer navigation">
-      <a routerLink="/">Sign up</a>
+      <button type="button" class="reset-customer-button" (click)="resetCustomer()">Not you?</button>
       <a class="call-pill" href="tel:4086224755">Call</a>
     </nav>
   </header>
@@ -16,6 +16,32 @@
       <a class="phone-link" href="tel:4086224755">408-622-4755</a>
       <span>4116 Monterey Rd, San Jose, CA 95111</span>
     </address>
+
+    {{campaignEntriesStatus()}}
+    @if (customerPhone() && campaignEntriesStatus() !== 'error') {
+      <section class="entries-card" aria-labelledby="entries-title">
+        <div>
+          <p class="entries-eyebrow">Your prize entries</p>
+        </div>
+        @if (campaignEntriesStatus() === 'loading') {
+          <p>Loading your entries...</p>
+        } @else if (campaignEntries().length === 0) {
+          <p>No active prize entries yet. Qualifying orders can add bonus entries.</p>
+        } @else {
+      
+          <div class="entries-list">
+            @for (entry of campaignEntries(); track entry['id'] ?? entry['campaign_id'] ?? $index) {
+              <article class="campaign-card">
+                <h3>🎮 {{ getCampaignTitle(entry) }}</h3>
+                <p class="prize-line">Prize: {{ getPrizeName(entry) }}</p>
+                <p class="entry-count">You currently have {{ getCampaignEntryCount(entry) }} entries</p>
+                <p class="entry-message">Spend $50+ to earn an additional entry.</p>
+              </article>
+            }
+          </div>
+        }
+      </section>
+    }
 
     @if (status() === 'loading') {
       <p class="status-card">Loading deals...</p>

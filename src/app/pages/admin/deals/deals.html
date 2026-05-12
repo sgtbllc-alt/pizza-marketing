@@ -1,71 +1,87 @@
 <main class="admin-deals-page">
   <section class="deals-shell" aria-labelledby="admin-deals-title">
-    <p class="eyebrow">Admin</p>
-    <h1 id="admin-deals-title">Deals</h1>
-    <p class="intro">Create, edit, and control which offers are shown on the public deals page.</p>
-
-    <form [formGroup]="dealForm" (ngSubmit)="submit()" class="deal-form" novalidate>
-      <div class="form-heading">
-        <h2>{{ editingDealId() ? 'Edit deal' : 'Add deal' }}</h2>
-        @if (editingDealId()) {
-          <button type="button" class="ghost-button" (click)="cancelEdit()">Cancel</button>
-        }
+    <a class="back-link" routerLink="/admin">Back to admin</a>
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">Admin</p>
+        <h1 id="admin-deals-title">Deals</h1>
+        <p class="intro">Create, edit, and control which offers are shown on the public deals page.</p>
       </div>
+      <button type="button" class="primary-button heading-action" (click)="openAddDealModal()">Add deal</button>
+    </div>
 
-      <label class="field">
-        <span>Title</span>
-        <input type="text" formControlName="title" placeholder="Large Pepperoni Special" />
-        @if (hasError('title')) {
-          <small>Title is required.</small>
-        }
-      </label>
+    @if (isDealModalOpen()) {
+      <div class="modal-backdrop" role="presentation" (click)="closeDealModal()">
+        <section
+          class="deal-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="deal-modal-title"
+          (click)="$event.stopPropagation()"
+        >
+          <form [formGroup]="dealForm" (ngSubmit)="submit()" class="deal-form" novalidate>
+            <div class="form-heading">
+              <h2 id="deal-modal-title">{{ editingDealId() ? 'Edit deal' : 'Add deal' }}</h2>
+              <button type="button" class="ghost-button" (click)="closeDealModal()">Close</button>
+            </div>
 
-      <label class="field">
-        <span>Description</span>
-        <textarea formControlName="description" rows="3" placeholder="Describe the deal customers will see."></textarea>
-        @if (hasError('description')) {
-          <small>Description is required.</small>
-        }
-      </label>
+            <label class="field">
+              <span>Title</span>
+              <input type="text" formControlName="title" placeholder="Large Pepperoni Special" />
+              @if (hasError('title')) {
+                <small>Title is required.</small>
+              }
+            </label>
 
-      <div class="price-grid">
-        <label class="field">
-          <span>Original price</span>
-          <input type="number" formControlName="original_price" min="0.01" step="0.01" placeholder="24.99" />
-          @if (hasError('original_price')) {
-            <small>Use a price greater than 0.</small>
-          }
-        </label>
+            <label class="field">
+              <span>Description</span>
+              <textarea formControlName="description" rows="3" placeholder="Describe the deal customers will see."></textarea>
+              @if (hasError('description')) {
+                <small>Description is required.</small>
+              }
+            </label>
 
-        <label class="field">
-          <span>Discounted price</span>
-          <input type="number" formControlName="discounted_price" min="0.01" step="0.01" placeholder="18.99" />
-          @if (hasError('discounted_price')) {
-            <small>Discounted price is required.</small>
-          }
-        </label>
+            <div class="price-grid">
+              <label class="field">
+                <span>Original price</span>
+                <input type="number" formControlName="original_price" min="0.01" step="0.01" placeholder="24.99" />
+                @if (hasError('original_price')) {
+                  <small>Use a price greater than 0.</small>
+                }
+              </label>
+
+              <label class="field">
+                <span>Discounted price</span>
+                <input type="number" formControlName="discounted_price" min="0.01" step="0.01" placeholder="18.99" />
+                @if (hasError('discounted_price')) {
+                  <small>Discounted price is required.</small>
+                }
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Promo code</span>
+              <input type="text" formControlName="promo_code" placeholder="PIZZA10" />
+            </label>
+
+            <label class="active-toggle">
+              <input type="checkbox" formControlName="active" />
+              <span>Active on public deals page</span>
+            </label>
+
+            <button type="submit" class="primary-button" [disabled]="isSaving()">
+              @if (isSaving()) {
+                Saving...
+              } @else if (editingDealId()) {
+                Update deal
+              } @else {
+                Add deal
+              }
+            </button>
+          </form>
+        </section>
       </div>
-
-      <label class="field">
-        <span>Promo code</span>
-        <input type="text" formControlName="promo_code" placeholder="PIZZA10" />
-      </label>
-
-      <label class="active-toggle">
-        <input type="checkbox" formControlName="active" />
-        <span>Active on public deals page</span>
-      </label>
-
-      <button type="submit" class="primary-button" [disabled]="isSaving()">
-        @if (isSaving()) {
-          Saving...
-        } @else if (editingDealId()) {
-          Update deal
-        } @else {
-          Add deal
-        }
-      </button>
-    </form>
+    }
 
     @if (statusMessage()) {
       <p class="status" [class.success]="status() === 'success'" [class.error]="status() === 'error'">

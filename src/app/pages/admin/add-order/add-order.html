@@ -1,4 +1,5 @@
 <main class="add-order-page">
+  <a class="back-link" routerLink="/admin">Back to admin</a>
   <section class="order-panel" aria-labelledby="add-order-title">
     <p class="eyebrow">Admin</p>
     <h1 id="add-order-title">Add order</h1>
@@ -15,7 +16,7 @@
           [attr.aria-invalid]="hasError('phone')"
         />
         @if (hasError('phone')) {
-          <small>Enter a valid phone number.</small>
+          <small>Enter a valid 10-digit US phone number.</small>
         }
       </label>
 
