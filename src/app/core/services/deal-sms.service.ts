@@ -22,10 +22,15 @@ export interface DealSmsPayload {
   message?: string;
 }
 
+export interface DealSmsError {
+  phone?: string;
+  message: string;
+}
+
 export interface DealSmsResult {
   total_sent: number;
   total_failed: number;
-  errors?: string[];
+  errors?: DealSmsError[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -83,7 +88,41 @@ export class DealSmsService {
     return {
       total_sent: result.total_sent ?? 0,
       total_failed: result.total_failed ?? 0,
-      errors: result.errors ?? [],
+      errors: this.normalizeErrors(result.errors ?? []),
     };
+  }
+
+  private normalizeErrors(errors: unknown[]): DealSmsError[] {
+    return errors.map((error) => {
+      if (typeof error === 'string') {
+        return { message: this.parseErrorMessage(error) };
+      }
+
+      if (error && typeof error === 'object') {
+        const record = error as { phone?: unknown; error?: unknown; message?: unknown };
+        const rawMessage = String(record.error ?? record.message ?? 'Unknown SMS error');
+
+        return {
+          phone: typeof record.phone === 'string' ? record.phone : undefined,
+          message: this.parseErrorMessage(rawMessage),
+        };
+      }
+
+      return { message: 'Unknown SMS error' };
+    });
+  }
+
+  private parseErrorMessage(message: string): string {
+    try {
+      const parsed = JSON.parse(message) as { message?: unknown };
+
+      if (typeof parsed.message === 'string') {
+        return parsed.message;
+      }
+    } catch {
+      // Twilio errors may arrive as plain text or as JSON strings.
+    }
+
+    return message;
   }
 }

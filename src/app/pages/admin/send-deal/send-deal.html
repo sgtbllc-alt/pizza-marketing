@@ -11,7 +11,23 @@
       <form [formGroup]="smsForm" class="sms-form" novalidate>
         <section class="form-section" aria-labelledby="recipient-title">
           <h2 id="recipient-title">Recipients</h2>
-          <p class="recipient-note">This message will go to all opted-in customers.</p>
+          <label class="radio-row">
+            <input type="radio" formControlName="recipient_mode" value="all" />
+            <span>All opted-in customers</span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" formControlName="recipient_mode" value="single" />
+            <span>Single phone number</span>
+          </label>
+
+          @if (recipientMode() === 'single') {
+            <label class="field">
+              <span>Phone number</span>
+              <input type="tel" formControlName="phone" inputmode="tel" placeholder="408-555-0123" />
+            </label>
+          } @else {
+            <p class="recipient-note">This message will go to all opted-in customers.</p>
+          }
         </section>
 
         <section class="form-section" aria-labelledby="deal-selection-title">
@@ -118,7 +134,12 @@
         @if (result()?.errors?.length) {
           <ul class="error-list">
             @for (error of result()?.errors; track error) {
-              <li>{{ error }}</li>
+              <li>
+                @if (error.phone) {
+                  <strong>{{ error.phone }}</strong>
+                }
+                <span>{{ error.message }}</span>
+              </li>
             }
           </ul>
         }

@@ -3,7 +3,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { Deal } from '../../../core/models/deal.model';
-import { DealSmsDeal, DealSmsPayload, DealSmsResult, DealSmsService } from '../../../core/services/deal-sms.service';
+import {
+  DealSmsDeal,
+  DealSmsPayload,
+  DealSmsResult,
+  DealSmsService,
+  RecipientMode,
+} from '../../../core/services/deal-sms.service';
 
 type DealMode = 'existing' | 'new';
 type SendDealStatus = 'idle' | 'loading' | 'sending' | 'success' | 'error';
@@ -29,6 +35,8 @@ export class SendDeal implements OnInit {
   protected readonly isSending = computed(() => this.status() === 'sending');
 
   protected readonly smsForm = this.formBuilder.group({
+    recipient_mode: ['all' as RecipientMode, [Validators.required]],
+    phone: [''],
     deal_mode: ['existing' as DealMode, [Validators.required]],
     deal_id: [''],
     title: ['', [Validators.required]],
@@ -60,6 +68,10 @@ export class SendDeal implements OnInit {
     return this.smsForm.controls.deal_mode.value ?? 'existing';
   }
 
+  protected recipientMode(): RecipientMode {
+    return this.smsForm.controls.recipient_mode.value ?? 'all';
+  }
+
   protected formatPrice(value: number | null | undefined): string {
     return value ? this.currencyFormatter.format(value) : '-';
   }
@@ -72,7 +84,7 @@ export class SendDeal implements OnInit {
       return;
     }
 
-    if (!confirm('Send this deal SMS to all opted-in customers?')) {
+    if (this.recipientMode() === 'all' && !confirm('Send this deal SMS to all opted-in customers?')) {
       return;
     }
 
@@ -106,6 +118,13 @@ export class SendDeal implements OnInit {
 
   private validateCurrentMode(): boolean {
     const dealMode = this.dealMode();
+    const recipientMode = this.recipientMode();
+
+    if (recipientMode === 'single' && !this.normalizePhone(this.smsForm.controls.phone.value ?? '')) {
+      this.status.set('error');
+      this.statusMessage.set('Please enter a valid 10-digit US phone number.');
+      return false;
+    }
 
     if (dealMode === 'existing' && !this.smsForm.controls.deal_id.value) {
       this.status.set('error');
@@ -137,10 +156,15 @@ export class SendDeal implements OnInit {
 
   private async buildPayload(): Promise<DealSmsPayload> {
     const raw = this.smsForm.getRawValue();
+    const recipientMode = this.recipientMode();
     const payload: DealSmsPayload = {
-      recipient_mode: 'all',
+      recipient_mode: recipientMode,
       message: raw.message?.trim() ?? '',
     };
+
+    if (recipientMode === 'single') {
+      payload.phone = this.normalizePhone(raw.phone ?? '') ?? undefined;
+    }
 
     if (this.dealMode() === 'existing') {
       payload.deal_id = raw.deal_id ?? undefined;
@@ -215,5 +239,19 @@ export class SendDeal implements OnInit {
 
     const numberValue = Number(value);
     return Number.isFinite(numberValue) ? numberValue : undefined;
+  }
+
+  private normalizePhone(phone: string): string | null {
+    const digits = phone.replace(/\D/g, '');
+
+    if (digits.length === 10) {
+      return `+1${digits}`;
+    }
+
+    if (digits.length === 11 && digits.startsWith('1')) {
+      return `+${digits}`;
+    }
+
+    return null;
   }
 }

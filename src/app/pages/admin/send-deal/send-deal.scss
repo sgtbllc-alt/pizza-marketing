@@ -253,10 +253,25 @@ textarea:focus {
 }
 
 .error-list {
+  display: grid;
+  gap: 8px;
   margin: 0;
-  padding-left: 20px;
+  padding: 0;
   color: #b42318;
   font-weight: 750;
+  list-style: none;
+}
+
+.error-list li {
+  display: grid;
+  gap: 4px;
+  border-radius: 8px;
+  background: #fff0ee;
+  padding: 10px 12px;
+}
+
+.error-list strong {
+  font-size: 0.86rem;
 }
 
 @media (min-width: 680px) {

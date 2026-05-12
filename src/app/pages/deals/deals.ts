@@ -62,7 +62,8 @@ export class DealsPage implements OnInit {
   }
 
   protected getCampaignEntryCount(entry: CampaignEntry): number {
-    const value = entry['entries'] ?? entry['entry_count'] ?? entry['prize_entries'] ?? 0;
+    console.log('Getting campaign entry count for:', entry);
+    const value = entry['total_entries'] ?? entry['total_entries'] ?? entry['prize_entries'] ?? 0;
     return typeof value === 'number' ? value : Number(value) || 0;
   }
 
