@@ -2,10 +2,11 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { InstallService } from './core/services/install.service';
+import { UpdateBanner } from './shared/update-banner';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, UpdateBanner],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
