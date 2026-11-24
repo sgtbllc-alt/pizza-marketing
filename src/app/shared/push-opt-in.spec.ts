@@ -42,4 +42,15 @@ describe('PushOptIn', () => {
     const el = await render(true);
     expect(el.querySelector('[data-testid="push-opt-in"]')).not.toBeNull();
   });
+
+  it('shows the 3 Home Screen steps to iPhone Safari visitors', async () => {
+    vi.stubGlobal('Notification', { permission: 'default' });
+    vi.stubGlobal('navigator', { userAgent: 'iPhone', platform: 'iPhone', maxTouchPoints: 5 });
+    vi.stubGlobal('matchMedia', () => ({ matches: false }));
+    const el = await render();
+
+    expect(el.textContent).toContain('3 steps to a FREE soda');
+    expect(el.querySelectorAll('app-ios-install-steps li').length).toBe(3);
+    expect(el.textContent).toContain('Add to Home Screen');
+  });
 });
