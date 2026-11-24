@@ -1,5 +1,7 @@
 import { Component, input } from '@angular/core';
 
+import { ShareHint } from './share-hint';
+
 /**
  * The three Add to Home Screen steps for iPhone/iPad Safari, with pictures (Share icon,
  * menu row, app icon). Used by the notification pop-up and the notification card.
@@ -9,9 +11,11 @@ import { Component, input } from '@angular/core';
   template: `
     <ol class="steps">
       <li>
-        <span>Tap <strong>Share</strong></span>
+        <span>
+          @if (hint().menu; as menu) { Tap <strong>{{ menu }}</strong> then <strong>Share</strong> } @else { Tap <strong>Share</strong> }
+        </span>
         <span class="chip"><svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
-        <small>{{ isIPad() ? 'Top right of Safari.' : 'Bottom of Safari. On newer iPhones, tap ••• first.' }}</small>
+        <small>{{ hint().where }}</small>
       </li>
       <li>
         <span>Tap</span>
@@ -118,6 +122,6 @@ import { Component, input } from '@angular/core';
   }  `,
 })
 export class IosInstallSteps {
-  /** iPad Safari has Share at the top right; iPhone at the bottom. */
-  readonly isIPad = input(false);
+  /** Where Share is on this browser (see share-hint.ts). */
+  readonly hint = input<ShareHint>({ position: 'bottom-center', menu: null, where: 'Bottom of Safari, in the middle.' });
 }

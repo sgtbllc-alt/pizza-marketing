@@ -4,6 +4,7 @@ import { Component, ElementRef, PLATFORM_ID, afterNextRender, inject, signal, vi
 import { STORE } from '../core/data/store.data';
 import { InstallService } from '../core/services/install.service';
 import { IosInstallSteps } from './ios-install-steps';
+import { ShareHint, currentDevice, shareHint } from './share-hint';
 import { PushService } from '../core/services/push.service';
 
 /** localStorage key: when the visitor last chose "Not now". */
@@ -31,12 +32,12 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
     @if (mode() !== 'hidden') {
       <div class="backdrop" (click)="dismiss()"></div>
       @if (mode() === 'install') {
-        <div class="hint-arrow" [class.ipad]="isIPad" aria-hidden="true" data-testid="share-arrow">
-          <span class="hint-label">Share is here</span>
-          <span class="hint-chevron">{{ isIPad ? '↑' : '↓' }}</span>
+        <div class="hint-arrow" [class]="'hint-arrow ' + hint().position" aria-hidden="true" data-testid="share-arrow">
+          <span class="hint-label">Tap here to start</span>
+          <span class="hint-chevron">{{ hint().position === 'top-right' ? '↑' : '↓' }}</span>
         </div>
       }
-      <div class="dialog" [class.top]="mode() === 'install'" role="dialog" aria-modal="true"
+      <div class="dialog" [class.top]="mode() === 'install' && hint().position !== 'top-right'" role="dialog" aria-modal="true"
         aria-labelledby="push-prompt-title" data-testid="push-prompt">
         <div class="icon" aria-hidden="true">{{ reward.emoji }}</div>
 
@@ -62,7 +63,7 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
           @case ('install') {
             <h2 id="push-prompt-title">3 steps to a {{ reward.short }}</h2>
             <p>Add us to your Home Screen and turn on deal alerts. Takes 10 seconds:</p>
-            <app-ios-install-steps [isIPad]="isIPad" />
+            <app-ios-install-steps [hint]="hint()" />
             <p class="terms">{{ reward.terms }}</p>
             <div class="actions">
               <button #primary type="button" class="primary" (click)="dismiss()">Got it</button>
@@ -136,15 +137,22 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
       pointer-events: none;
       animation: nudge-down 1s ease-in-out infinite;
     }
-    .hint-arrow.ipad {
-      top: 8px;
-      right: 70px;
+    .hint-arrow.bottom-right {
+      right: 10px;
+      left: auto;
+      transform: none;
+      justify-items: end;
+    }
+    .hint-arrow.top-right {
+      top: max(6px, env(safe-area-inset-top));
+      right: 10px;
       bottom: auto;
       left: auto;
       transform: none;
+      justify-items: end;
       animation-name: nudge-up;
     }
-    .hint-arrow.ipad .hint-chevron {
+    .hint-arrow.top-right .hint-chevron {
       order: -1;
     }
     .hint-label {
@@ -249,8 +257,8 @@ export class PushPrompt {
 
   protected readonly mode = signal<PromptMode>('hidden');
   protected readonly reward = STORE.pushReward;
-  /** iPad Safari has Share at the top right; iPhone at the bottom. */
-  protected isIPad = false;
+  /** Where Share is on this phone's browser, for the arrow and step 1 (see share-hint.ts). */
+  protected readonly hint = signal<ShareHint>(shareHint({ userAgent: '', platform: '', maxTouchPoints: 0, landscape: false }));
 
   constructor() {
     // Browser-only: reads localStorage and push capabilities. Never runs while pre-rendering.
@@ -261,7 +269,9 @@ export class PushPrompt {
     if (!this.isBrowser || !shouldOffer()) return;
 
     if (this.push.needsHomeScreen) {
-      this.isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      this.hint.set(shareHint(currentDevice()));
+      // Turning the phone sideways moves Safari's toolbar on older iPhones.
+      window.addEventListener('resize', () => this.hint.set(shareHint(currentDevice())));
       this.open('install');
       return;
     }

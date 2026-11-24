@@ -3,6 +3,7 @@ import { STORE } from '../core/data/store.data';
 import { PushStatusService } from '../core/services/push-status.service';
 import { PushService } from '../core/services/push.service';
 import { IosInstallSteps } from './ios-install-steps';
+import { ShareHint, currentDevice, shareHint } from './share-hint';
 
 @Component({
   selector: 'app-push-opt-in',
@@ -13,7 +14,7 @@ import { IosInstallSteps } from './ios-install-steps';
       @if (push.needsHomeScreen) {
         <h2>3 steps to a {{ reward.short }} {{ reward.emoji }}</h2>
         <p>Add us to your Home Screen and turn on deal alerts:</p>
-        <app-ios-install-steps [isIPad]="isIPad" />
+        <app-ios-install-steps [hint]="hint" />
         <p class="terms">{{ reward.terms }} Needs iOS 16.4 or later.</p>
       } @else if (!push.supported) {
         <h2>Get pizza deal notifications</h2>
@@ -53,13 +54,13 @@ export class PushOptIn implements OnInit {
   protected readonly push = inject(PushService);
   private readonly status = inject(PushStatusService);
   protected readonly reward = STORE.pushReward;
-  protected isIPad = false;
+  protected hint: ShareHint = shareHint({ userAgent: '', platform: '', maxTouchPoints: 0, landscape: false });
   /** Keep showing the card (with "Turn off") after notifications are on. Used on the admin send page. */
   readonly showWhenOn = input(false);
   /** Customers only see the card while it is useful: to turn notifications on. Turning off lives on /notifications. */
   protected readonly hidden = computed(() => !this.showWhenOn() && (this.push.enabled() || this.status.enabledAt() !== null));
   ngOnInit() {
-    this.isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    this.hint = shareHint(currentDevice());
     this.status.load();
     void this.push.initialize();
   }
