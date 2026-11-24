@@ -18,7 +18,7 @@ const shell = join(browser, 'index.csr.html');
 if (!existsSync(join(browser, 'index.html'))) copyFileSync(shell, join(browser, 'index.html'));
 copyFileSync(shell, join(browser, '404.html'));
 // Client-rendered routes get their own copy so GitHub Pages answers 200 instead of 404.
-const clientRoutes = ['deals', 'admin', 'admin-login', 'admin/add-order', 'admin/deals', 'admin/customers', 'admin/send-deal', 'admin/send-push'];
+const clientRoutes = ['deals', 'call', 'notifications', 'admin', 'admin-login', 'admin/add-order', 'admin/deals', 'admin/customers', 'admin/send-deal', 'admin/send-push'];
 for (const route of clientRoutes) {
   const file = join(browser, route, 'index.html');
   if (!existsSync(file)) {

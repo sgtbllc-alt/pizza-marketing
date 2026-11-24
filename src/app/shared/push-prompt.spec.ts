@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 
+import { InstallService } from '../core/services/install.service';
 import { PushService } from '../core/services/push.service';
 import { PUSH_PROMPT_DISMISSED_KEY, PushPrompt } from './push-prompt';
 
@@ -21,10 +22,20 @@ function fakePush(overrides: Partial<Record<string, unknown>> = {}) {
   };
 }
 
-async function render(push: ReturnType<typeof fakePush>): Promise<{ el: HTMLElement; fixture: ComponentFixture<PushPrompt> }> {
+function fakeInstaller(canInstall = false) {
+  return { canInstall: signal(canInstall), installed: signal(false), install: vi.fn().mockResolvedValue(true) };
+}
+
+async function render(
+  push: ReturnType<typeof fakePush>,
+  installer = fakeInstaller(),
+): Promise<{ el: HTMLElement; fixture: ComponentFixture<PushPrompt> }> {
   await TestBed.configureTestingModule({
     imports: [PushPrompt],
-    providers: [{ provide: PushService, useValue: push }],
+    providers: [
+      { provide: PushService, useValue: push },
+      { provide: InstallService, useValue: installer },
+    ],
   }).compileComponents();
   const fixture = TestBed.createComponent(PushPrompt);
   fixture.detectChanges();
@@ -90,5 +101,20 @@ describe('PushPrompt', () => {
     TestBed.resetTestingModule();
     const again = await render(fakePush());
     expect(again.el.querySelector('[data-testid="push-prompt"]')).toBeNull();
+  });
+
+  it('offers Install the app when the browser allows it, and hides it otherwise', async () => {
+    localStorage.setItem('customer_signed_up', 'true');
+    const installer = fakeInstaller(true);
+    const { el } = await render(fakePush(), installer);
+
+    const installButton = el.querySelector<HTMLButtonElement>('[data-testid="push-prompt-install"]');
+    expect(installButton).not.toBeNull();
+    installButton!.click();
+    expect(installer.install).toHaveBeenCalledTimes(1);
+
+    TestBed.resetTestingModule();
+    const noInstall = await render(fakePush(), fakeInstaller(false));
+    expect(noInstall.el.querySelector('[data-testid="push-prompt-install"]')).toBeNull();
   });
 });

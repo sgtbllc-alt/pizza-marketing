@@ -29,6 +29,14 @@ export class DealService {
     return data ?? [];
   }
 
+  /** One deal by id, or null if it does not exist or is not visible. */
+  async getDeal(id: string): Promise<Deal | null> {
+    const { data, error } = await supabase.from(this.tableName).select('*').eq('id', id).maybeSingle();
+
+    if (error) throw error;
+    return data ?? null;
+  }
+
   async getAllDeals(): Promise<Deal[]> {
     const { data, error } = await supabase
       .from(this.tableName)

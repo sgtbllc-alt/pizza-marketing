@@ -8,7 +8,9 @@ serve(async req => {
       typeof input.title !== 'string' || !input.title.trim() || input.title.length > 80 ||
       typeof input.message !== 'string' || !input.message.trim() || input.message.length > 240 ||
       (input.audience === 'test' && !uuid(input.deviceId)) ||
-      (input.cursor != null && !uuid(input.cursor))) throw new HttpError(400, 'Invalid notification.');
+      (input.cursor != null && !uuid(input.cursor)) ||
+      (input.dealId != null && !uuid(input.dealId)) ||
+      (input.callButton != null && typeof input.callButton !== 'boolean')) throw new HttpError(400, 'Invalid notification.');
   let query = client.from('push_subscriptions').select('id, endpoint, p256dh, auth').order('id').limit(51);
   if (input.audience === 'test') query = query.eq('id', input.deviceId);
   else if (input.cursor) query = query.gt('id', input.cursor);
@@ -16,10 +18,18 @@ serve(async req => {
   if (error) throw error;
   if (input.audience === 'test' && !data?.length) throw new HttpError(400, 'Enable notifications on this device first.');
   webpush.setVapidDetails(setting('VAPID_SUBJECT'), setting('VAPID_PUBLIC_KEY'), setting('VAPID_PRIVATE_KEY'));
+  // Tapping always opens a deal page: the chosen deal's own page, or today's deals.
+  // The optional "Call us" button shows on Android and computers (iPhone web notifications have no buttons).
+  const tapUrl = input.dealId ? `${siteOrigin()}/deals/${input.dealId}` : `${siteOrigin()}/deals`;
+  const callAction = input.callButton === true;
   const payload = JSON.stringify({ notification: {
     title: input.title.trim(), body: input.message.trim(),
     icon: `${siteOrigin()}/icons/icon-192x192.png`, tag: input.campaignId,
-    data: { onActionClick: { default: { operation: 'navigateLastFocusedOrOpen', url: `${siteOrigin()}/deals` } } },
+    ...(callAction ? { actions: [{ action: 'call', title: 'Call us' }] } : {}),
+    data: { onActionClick: {
+      default: { operation: 'navigateLastFocusedOrOpen', url: tapUrl },
+      ...(callAction ? { call: { operation: 'openWindow', url: `${siteOrigin()}/call?auto=1` } } : {}),
+    } },
   } });
   const rows = (data ?? []).slice(0, 50);
   let sent = 0, failed = 0, expired = 0;

@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, PLATFORM_ID, afterNextRender, inject, signal, viewChild } from '@angular/core';
 
+import { InstallService } from '../core/services/install.service';
 import { PushService } from '../core/services/push.service';
 
 /** localStorage key: when the visitor last chose "Not now". */
@@ -41,6 +42,9 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
                 [disabled]="push.busy()" (click)="enable()">
                 {{ push.busy() ? 'Turning on…' : 'Turn on notifications' }}
               </button>
+              @if (installer.canInstall()) {
+                <button type="button" class="secondary" data-testid="push-prompt-install" (click)="install()">Install the app</button>
+              }
               <button type="button" class="secondary" (click)="dismiss()">Not now</button>
             </div>
           }
@@ -59,8 +63,14 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
           @case ('done') {
             <h2 id="push-prompt-title">You're all set!</h2>
             <p>We'll let you know when new pizza deals drop.</p>
+            @if (installer.canInstall()) {
+              <p>Add the app to your home screen for one-tap ordering.</p>
+            }
             <div class="actions">
-              <button #primary type="button" class="primary" (click)="close()">Continue</button>
+              @if (installer.canInstall()) {
+                <button type="button" class="primary" data-testid="push-prompt-install" (click)="install()">Install the app</button>
+              }
+              <button #primary type="button" [class.primary]="!installer.canInstall()" [class.secondary]="installer.canInstall()" (click)="close()">Continue</button>
             </div>
           }
         }
@@ -158,6 +168,7 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
 })
 export class PushPrompt {
   protected readonly push = inject(PushService);
+  protected readonly installer = inject(InstallService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly primary = viewChild<ElementRef<HTMLButtonElement>>('primary');
 
@@ -189,6 +200,11 @@ export class PushPrompt {
       this.open('done');
     }
     // Otherwise stay open: push.message() explains what happened (e.g. blocked in settings).
+  }
+
+  protected async install(): Promise<void> {
+    await this.installer.install();
+    // Installing does not replace the notification choice; the pop-up stays in its current step.
   }
 
   protected dismiss(): void {

@@ -3,13 +3,15 @@ import { SwPush } from '@angular/service-worker';
 import { firstValueFrom, timeout } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { supabase } from '../supabase.client';
+import { PushStatusService } from './push-status.service';
 
 export interface PushResult { sent: number; failed: number; expired: number; nextCursor: string | null; }
-export interface PushMessage { title: string; message: string; audience: 'test' | 'all'; campaignId: string; cursor?: string; deviceId?: string; }
+export interface PushMessage { title: string; message: string; audience: 'test' | 'all'; campaignId: string; cursor?: string; deviceId?: string; dealId?: string; callButton?: boolean; }
 
 @Injectable({ providedIn: 'root' })
 export class PushService {
   private readonly swPush = inject(SwPush);
+  private readonly status = inject(PushStatusService);
   private readonly base = `${environment.supabaseUrl}/functions/v1`;
   readonly enabled = signal(false);
   readonly ready = signal(false);
@@ -80,6 +82,7 @@ export class PushService {
       const subscription = await firstValueFrom(this.swPush.subscription.pipe(timeout(5000)));
       if (subscription) await subscription.unsubscribe();
       this.enabled.set(false);
+      this.status.clear();
       this.message.set('Notifications are turned off on this device.');
     } catch (error) {
       this.message.set(error instanceof Error ? error.message : 'Could not turn off notifications. Please retry.');
@@ -93,9 +96,12 @@ export class PushService {
     localStorage.setItem('mmk_push_device', JSON.stringify(device));
     return device;
   }
-  private save(subscription: PushSubscription) {
-    return this.request('push-subscribe', { ...this.device(), action: 'subscribe', subscription: subscription.toJSON() });
+  private async save(subscription: PushSubscription): Promise<void> {
+    const result = await this.request<{ enabledAt?: string | null }>('push-subscribe',
+      { ...this.device(), action: 'subscribe', subscription: subscription.toJSON() });
+    this.status.record(result?.enabledAt);
   }
+
   async send(input: PushMessage): Promise<PushResult> {
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw new Error('Please sign in as an admin.');

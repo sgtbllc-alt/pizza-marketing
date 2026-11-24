@@ -16,6 +16,10 @@ export const routes: Routes = [
   { path: 'admin/send-push', component: SendPush, canActivate: [adminAuthGuard] },
   { path: '', component: SignupComponent },
   { path: 'deals', component: DealsPage },
+  {
+    path: 'deals/:id',
+    loadComponent: () => import('./pages/deal-detail/deal-detail').then((m) => m.DealDetailPage),
+  },
   { path: 'admin-login', component: AdminLogin },
   {
     path: 'admin',
@@ -45,6 +49,14 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () => import('./pages/home/home').then((m) => m.HomePage),
+  },
+  {
+    path: 'notifications',
+    loadComponent: () => import('./pages/notifications/notifications').then((m) => m.NotificationsPage),
+  },
+  {
+    path: 'call',
+    loadComponent: () => import('./pages/call/call').then((m) => m.CallPage),
   },
   {
     path: 'blog',

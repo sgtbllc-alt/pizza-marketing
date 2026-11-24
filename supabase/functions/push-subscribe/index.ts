@@ -6,7 +6,7 @@ serve(async req => {
   const client = db();
   const hash = await secretHash(input.deviceSecret);
   const { data: existing, error: readError } = await client.from('push_subscriptions')
-    .select('id, device_secret_hash').eq('id', input.deviceId).maybeSingle();
+    .select('id, device_secret_hash, created_at').eq('id', input.deviceId).maybeSingle();
   if (readError) throw readError;
   if (existing && existing.device_secret_hash !== hash) throw new HttpError(403, 'Device authorization failed.');
   if (input.action === 'unsubscribe') {
@@ -20,10 +20,13 @@ serve(async req => {
   }
   const values = { endpoint: subscription.endpoint, p256dh: subscription.keys.p256dh,
     auth: subscription.keys.auth, updated_at: new Date().toISOString() };
-  const { error } = existing
+  const { data: saved, error } = existing
     ? await client.from('push_subscriptions').update(values).eq('id', input.deviceId).eq('device_secret_hash', hash)
-    : await client.from('push_subscriptions').insert({ ...values, id: input.deviceId, device_secret_hash: hash });
+      .select('created_at').single()
+    : await client.from('push_subscriptions').insert({ ...values, id: input.deviceId, device_secret_hash: hash })
+      .select('created_at').single();
   if (error?.code === '23505') throw new HttpError(409, 'This device is already registered. Turn notifications off, then enable them again.');
   if (error) throw error;
-  return { ok: true };
+  // When this device first turned notifications on (server time), shown on the customer's status page.
+  return { ok: true, enabledAt: saved?.created_at ?? existing?.created_at ?? null };
 });

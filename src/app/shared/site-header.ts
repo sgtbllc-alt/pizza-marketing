@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, afterNextRender, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { STORE } from '../core/data/store.data';
+import { PushStatusService } from '../core/services/push-status.service';
 
 @Component({
   selector: 'app-site-header',
@@ -10,7 +11,13 @@ import { STORE } from '../core/data/store.data';
     <header class="site-header">
       <div class="header-inner">
         <div class="brand">
-          <a class="brand-name" routerLink="/home">{{ store.name }}</a>
+          <span class="brand-row">
+            <a class="brand-name" routerLink="/home">{{ store.name }}</a>
+            @if (push.enabledAt()) {
+              <a class="push-tick" routerLink="/notifications" data-testid="push-tick"
+                aria-label="Notifications are on. See details" title="Notifications are on">✓</a>
+            }
+          </span>
           <span class="brand-address">{{ store.address }}</span>
         </div>
         <nav aria-label="Main navigation">
@@ -40,6 +47,25 @@ import { STORE } from '../core/data/store.data';
     .brand {
       display: grid;
       gap: 2px;
+    }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .push-tick {
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #2fb36d;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 900;
+      line-height: 1;
+      text-decoration: none;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
     }
     .brand-name {
       color: #fff;
@@ -76,4 +102,10 @@ import { STORE } from '../core/data/store.data';
 })
 export class SiteHeader {
   protected readonly store = STORE;
+  protected readonly push = inject(PushStatusService);
+
+  constructor() {
+    // Browser only (reads localStorage); pre-rendered pages show the tick after loading.
+    afterNextRender(() => this.push.load());
+  }
 }
