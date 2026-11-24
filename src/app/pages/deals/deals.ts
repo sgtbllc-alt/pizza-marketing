@@ -1,6 +1,7 @@
 import { PushOptIn } from '../../shared/push-opt-in';
+import { SiteHeader } from '../../shared/site-header';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { Deal } from '../../core/models/deal.model';
 import { SeoService } from '../../core/seo/seo.service';
@@ -11,7 +12,7 @@ type CampaignEntriesStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 @Component({
   selector: 'app-deals',
-  imports: [RouterLink, PushOptIn],
+  imports: [PushOptIn, SiteHeader],
   templateUrl: './deals.html',
   styleUrl: './deals.scss',
 })
