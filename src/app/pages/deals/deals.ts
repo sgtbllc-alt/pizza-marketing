@@ -1,7 +1,9 @@
+import { PushOptIn } from '../../shared/push-opt-in';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { Deal } from '../../core/models/deal.model';
+import { SeoService } from '../../core/seo/seo.service';
 import { CampaignEntry, DealService } from '../../core/services/deal.service';
 
 type DealsStatus = 'loading' | 'ready' | 'error';
@@ -9,13 +11,14 @@ type CampaignEntriesStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 @Component({
   selector: 'app-deals',
-  imports: [RouterLink],
+  imports: [RouterLink, PushOptIn],
   templateUrl: './deals.html',
   styleUrl: './deals.scss',
 })
 export class DealsPage implements OnInit {
   private readonly dealService = inject(DealService);
   private readonly router = inject(Router);
+  private readonly seo = inject(SeoService);
   private readonly currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -33,6 +36,12 @@ export class DealsPage implements OnInit {
   );
 
   ngOnInit(): void {
+    this.seo.set({
+      title: "Today's Pizza Deals – Mountain Mike's San Jose",
+      description: "Current pizza deals and specials at Mountain Mike's Pizza, 4116 Monterey Road, San Jose.",
+      path: '/deals',
+    });
+
     const phone = localStorage.getItem('customer_phone');
     this.customerPhone.set(phone);
 

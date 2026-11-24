@@ -1,0 +1,9 @@
+project_id = "pizza-marketing"
+
+# Public device registration; sender verifies the user JWT and admin allowlist itself.
+[functions.push-config]
+verify_jwt = false
+[functions.push-subscribe]
+verify_jwt = false
+[functions.send-push]
+verify_jwt = false

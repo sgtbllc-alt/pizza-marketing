@@ -1,0 +1,83 @@
+<div class="home-page">
+  <app-site-header />
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title">{{ store.heroHeading }}</h1>
+      <p class="hero-sub">{{ store.heroSubtext }}</p>
+      <a class="btn btn-call" [href]="store.phoneHref">Call us for Specials</a>
+    </section>
+
+    <section class="promo" aria-label="Current promotion">
+      <p class="promo-text" data-testid="promo-text">{{ promoText() }}</p>
+      <a class="btn btn-order" [href]="store.orderUrl" target="_blank" rel="noopener">Order Now</a>
+    </section>
+
+    <section class="menu" id="menu" aria-label="Menu">
+      @for (section of sections; track section.id) {
+        <h2 class="menu-heading">{{ section.heading }}</h2>
+        <div class="menu-grid">
+          @for (item of section.items; track item.name) {
+            <article class="menu-card" data-testid="menu-card">
+              <div class="card-media">
+                @if (hasImage(item)) {
+                  <img
+                    [src]="imageSrc(item)"
+                    [alt]="item.name"
+                    loading="lazy"
+                    width="600"
+                    height="400"
+                    (error)="onImageError(item)"
+                  />
+                } @else {
+                  <div class="img-placeholder" role="img" [attr.aria-label]="item.name">
+                    <span>{{ item.name }}</span>
+                  </div>
+                }
+                @if (item.isNew) {
+                  <span class="badge-new">New</span>
+                }
+              </div>
+              <div class="card-body">
+                <h3>{{ item.name }}</h3>
+                @if (item.description) {
+                  <p>{{ item.description }}</p>
+                }
+                <div class="card-actions">
+                  <a
+                    class="btn btn-order"
+                    data-testid="order-link"
+                    [href]="store.orderUrl"
+                    target="_blank"
+                    rel="noopener"
+                    >Order Now</a
+                  >
+                  <a class="btn btn-outline" [href]="store.phoneHref">Call Now</a>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="blog-teaser" aria-labelledby="blog-teaser-title">
+      <div class="blog-teaser-head">
+        <h2 id="blog-teaser-title" class="menu-heading">From our blog</h2>
+        <a routerLink="/blog">All posts</a>
+      </div>
+      <div class="menu-grid">
+        @for (post of latestPosts; track post.slug) {
+          <a class="blog-card" [routerLink]="['/blog', post.slug]" data-testid="blog-teaser-card">
+            @if (post.image) {
+              <img [src]="post.image" [alt]="post.title" loading="lazy" width="600" height="400" />
+            }
+            <span class="blog-card-title">{{ post.title }}</span>
+          </a>
+        }
+      </div>
+    </section>
+  </main>
+
+  <app-site-footer />
+</div>

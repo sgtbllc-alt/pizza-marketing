@@ -9,6 +9,7 @@ import { RouterLink } from '@angular/router';
 })
 export class Admin {
   protected readonly adminCards = [
+    { title: 'Send push notification', description: 'Send pizza offers to subscribed devices.', link: '/admin/send-push', action: 'Send notification' },
     {
       title: 'Add order',
       description: 'Attach a new order total to a customer phone number.',

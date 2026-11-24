@@ -1,0 +1,26 @@
+<app-site-header />
+
+<main class="blog-page">
+  <h1>Mountain Mike's Pizza Blog</h1>
+  <p class="intro">News, favorites and ideas from Mountain Mike's Pizza on Monterey Road.</p>
+
+  <div class="post-grid">
+    @for (post of posts; track post.slug) {
+      <a class="post-card" [routerLink]="['/blog', post.slug]" data-testid="blog-card">
+        @if (post.image) {
+          <img [src]="post.image" [alt]="post.title" loading="lazy" width="600" height="400" />
+        } @else {
+          <div class="img-placeholder" aria-hidden="true">Mountain Mike's</div>
+        }
+        <div class="post-card-body">
+          <time [attr.datetime]="post.date">{{ post.date | date: 'mediumDate' }}</time>
+          <h2>{{ post.title }}</h2>
+          <p>{{ post.excerpt }}</p>
+          <span class="read-more">Read more</span>
+        </div>
+      </a>
+    }
+  </div>
+</main>
+
+<app-site-footer />

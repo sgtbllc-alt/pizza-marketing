@@ -1,14 +1,16 @@
+import { PushOptIn } from '../../shared/push-opt-in';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
+import { SeoService } from '../../core/seo/seo.service';
 import { MarketingApiService } from '../../services/marketing-api.service';
 
 type SignupStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 @Component({
   selector: 'app-signup',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, PushOptIn],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })
@@ -16,6 +18,7 @@ export class SignupComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly marketingApi = inject(MarketingApiService);
   private readonly router = inject(Router);
+  private readonly seo = inject(SeoService);
 
   protected readonly status = signal<SignupStatus>('idle');
   protected readonly statusMessage = signal('');
@@ -28,8 +31,15 @@ export class SignupComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.seo.set({
+      title: "Win Prizes & Get Pizza Deals – Mountain Mike's San Jose",
+      description:
+        "Sign up for text deals, giveaways and bonus prize entries from Mountain Mike's Pizza on Monterey Road, San Jose.",
+      path: '/',
+    });
+
     if (localStorage.getItem('customer_signed_up') === 'true') {
-      void this.router.navigate(['/deals']);
+      void this.router.navigate(['/home']);
     }
   }
 
@@ -65,7 +75,7 @@ export class SignupComponent implements OnInit {
           this.status.set('success');
           this.statusMessage.set(response.message || 'You are signed up. Check your phone for a text from us.');
           this.signupForm.reset({ name: '', phone: '', smsConsent: false });
-          void this.router.navigate(['/deals']);
+          void this.router.navigate(['/home']);
         },
         error: (error: Error) => {
           this.status.set('error');

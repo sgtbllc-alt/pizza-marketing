@@ -1,0 +1,146 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: #fff5d7;
+  color: #1f1814;
+  overflow-x: hidden;
+}
+
+.post-page {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.back-link {
+  color: #b2292e;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+article {
+  margin-top: 16px;
+  padding: 20px 16px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+time {
+  color: #7b6b63;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 6px 0 0;
+  color: #004438;
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  line-height: 1.15;
+}
+
+// Imported WordPress HTML: style by element, it carries no classes.
+.post-content {
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+
+  ::ng-deep {
+    h2,
+    h3 {
+      margin: 1.6em 0 0.5em;
+      color: #004438;
+      line-height: 1.25;
+    }
+    h2 {
+      font-size: 1.4rem;
+    }
+    h3 {
+      font-size: 1.15rem;
+    }
+    p,
+    ul {
+      margin: 0 0 1em;
+      color: #3d332e;
+    }
+    a {
+      color: #b2292e;
+      font-weight: 700;
+    }
+    figure {
+      margin: 1.2em 0;
+    }
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+      border-radius: 8px;
+    }
+    figcaption {
+      margin-top: 6px;
+      color: #7b6b63;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+  }
+}
+
+.post-cta {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  margin: 24px 0;
+  padding: 20px 16px;
+  border-radius: 8px;
+  background: #b2292e;
+  color: #fff;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 900;
+  }
+
+  div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+}
+
+.btn {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.btn-order {
+  background: #f5d93f;
+  color: #004438;
+}
+
+.btn-call {
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+.more-posts {
+  h2 {
+    color: #004438;
+    font-size: 1.3rem;
+  }
+
+  ul {
+    display: grid;
+    gap: 8px;
+    padding-left: 1.2em;
+  }
+
+  a {
+    color: #004438;
+    font-weight: 800;
+  }
+}

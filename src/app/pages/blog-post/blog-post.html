@@ -1,0 +1,38 @@
+<app-site-header />
+
+<main class="post-page">
+  @if (post(); as post) {
+    <a class="back-link" routerLink="/blog">← All posts</a>
+    <article>
+      <header>
+        <time [attr.datetime]="post.date">{{ post.date | date: 'longDate' }}</time>
+        <h1>{{ post.title }}</h1>
+      </header>
+      <div class="post-content" data-testid="post-content" [innerHTML]="content()"></div>
+    </article>
+
+    <aside class="post-cta">
+      <p>Hungry now?</p>
+      <div>
+        <a class="btn btn-order" [href]="store.orderUrl" target="_blank" rel="noopener">Order online</a>
+        <a class="btn btn-call" [href]="store.phoneHref">Call {{ store.phoneDisplay }}</a>
+      </div>
+    </aside>
+
+    @if (morePosts().length) {
+      <section class="more-posts" aria-labelledby="more-title">
+        <h2 id="more-title">More from our blog</h2>
+        <ul>
+          @for (other of morePosts(); track other.slug) {
+            <li><a [routerLink]="['/blog', other.slug]">{{ other.title }}</a></li>
+          }
+        </ul>
+      </section>
+    }
+  } @else {
+    <h1>Post not found</h1>
+    <p>That post may have moved. <a routerLink="/blog">See all posts</a>.</p>
+  }
+</main>
+
+<app-site-footer />

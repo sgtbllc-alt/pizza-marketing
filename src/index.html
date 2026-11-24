@@ -2,10 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>PizzaMarketing</title>
+    <title>Pizza in San Jose – Mountain Mike's Pizza, 4116 Monterey Road</title>
+    <meta name="description" content="Mountain Mike's Pizza on Monterey Road, San Jose: specialty and classic pizzas, party and catering specials. Order online or call 408-622-4755." />
+    <meta name="theme-color" content="#c7422f" />
+    <meta name="apple-mobile-web-app-title" content="MMK Rewards" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <base href="/" />
+    <script>
+      // Old links used hash URLs (/#/deals). Rewrite them to real paths before Angular starts.
+      (function () {
+        var h = window.location.hash;
+        if (h.indexOf('#/') === 0) {
+          history.replaceState(null, '', h.slice(1) || '/');
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="48x48" />
     <link rel="manifest" href="manifest.webmanifest" />
   </head>
   <body>

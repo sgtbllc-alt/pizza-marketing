@@ -42,3 +42,8 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Private notification deployment settings
+supabase/.env*
+!supabase/.env.example
+supabase/.temp/
