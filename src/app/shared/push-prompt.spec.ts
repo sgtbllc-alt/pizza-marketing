@@ -22,8 +22,13 @@ function fakePush(overrides: Partial<Record<string, unknown>> = {}) {
   };
 }
 
-function fakeInstaller(canInstall = false) {
-  return { canInstall: signal(canInstall), installed: signal(false), install: vi.fn().mockResolvedValue(true) };
+function fakeInstaller(canInstall = false, androidBrowser = false) {
+  return {
+    canInstall: signal(canInstall),
+    installed: signal(false),
+    offerInstall: signal(canInstall || androidBrowser),
+    install: vi.fn().mockResolvedValue(true),
+  };
 }
 
 async function render(
@@ -124,5 +129,17 @@ describe('PushPrompt', () => {
     const { el } = await render(fakePush());
     expect(el.querySelector('[data-testid="push-prompt"]')?.textContent).toContain('One tap to a FREE soda');
     vi.unstubAllGlobals();
+  });
+
+  it('on Android without one-tap install, Install shows the Chrome menu steps', async () => {
+    localStorage.setItem('customer_signed_up', 'true');
+    const installer = fakeInstaller(false, true);
+    const { el, fixture } = await render(fakePush(), installer);
+
+    el.querySelector<HTMLButtonElement>('[data-testid="push-prompt-install"]')!.click();
+    fixture.detectChanges();
+
+    expect(installer.install).not.toHaveBeenCalled();
+    expect(el.querySelector('[data-testid="install-help"]')?.textContent).toContain('Add to Home screen');
   });
 });

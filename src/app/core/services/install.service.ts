@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 
 /** Chrome/Edge/Samsung Internet event that allows showing the "Install app" dialog from our own button. */
 interface BeforeInstallPromptEvent extends Event {
@@ -21,9 +21,25 @@ export class InstallService {
   /** True when the browser will show its install dialog if we ask. */
   readonly canInstall = signal(false);
   readonly installed = signal(false);
+  /** Android browser tab (not the installed app): offer Install even without Chrome's one-tap dialog. */
+  readonly androidBrowser = signal(false);
+  /** Show an "Install the app" option: one-tap where possible, otherwise manual steps on Android. */
+  readonly offerInstall = computed(() => !this.installed() && (this.canInstall() || this.androidBrowser()));
 
   listen(): void {
     if (!this.isBrowser) return;
+    const standalone =
+      (typeof matchMedia === 'function' && matchMedia('(display-mode: standalone)').matches) ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    this.installed.set(standalone);
+    this.androidBrowser.set(/Android/i.test(navigator.userAgent) && !standalone);
+
+    // index.html catches the offer before Angular starts; pick it up if it already came.
+    const early = (window as Window & { __mmkInstallPrompt?: BeforeInstallPromptEvent }).__mmkInstallPrompt;
+    if (early) {
+      this.deferred = early;
+      this.canInstall.set(true);
+    }
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault(); // keep it for our button instead of Chrome's mini-bar
       this.deferred = event as BeforeInstallPromptEvent;
@@ -41,6 +57,7 @@ export class InstallService {
     const event = this.deferred;
     if (!event) return false;
     this.deferred = null;
+    (window as Window & { __mmkInstallPrompt?: unknown }).__mmkInstallPrompt = undefined;
     this.canInstall.set(false);
     await event.prompt();
     const { outcome } = await event.userChoice;

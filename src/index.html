@@ -9,6 +9,11 @@
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <base href="/" />
     <script>
+      // Chrome offers "install app" once, early. Keep it for the app's Install button (InstallService).
+      window.addEventListener('beforeinstallprompt', function (event) {
+        event.preventDefault();
+        window.__mmkInstallPrompt = event;
+      });
       // Old links used hash URLs (/#/deals). Rewrite them to real paths before Angular starts.
       (function () {
         var h = window.location.hash;

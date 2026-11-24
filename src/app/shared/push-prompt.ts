@@ -53,11 +53,16 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
                 [disabled]="push.busy()" (click)="enable()">
                 {{ push.busy() ? 'Turning on…' : 'Turn on notifications' }}
               </button>
-              @if (installer.canInstall()) {
+              @if (installer.offerInstall()) {
                 <button type="button" class="secondary" data-testid="push-prompt-install" (click)="install()">Install the app</button>
               }
               <button type="button" class="secondary" (click)="dismiss()">Not now</button>
             </div>
+            @if (showInstallHelp()) {
+              <p class="install-help" data-testid="install-help" role="status">
+                In Chrome, tap <strong>⋮</strong> (top right), then <strong>Install app</strong> or <strong>Add to Home screen</strong>.
+              </p>
+            }
             <p class="terms">{{ reward.terms }}</p>
           }
           @case ('install') {
@@ -72,15 +77,21 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
           @case ('done') {
             <h2 id="push-prompt-title">Your {{ reward.short }} is unlocked!</h2>
             <p>Show the green <strong class="tick-inline">✓</strong> page at the counter on your next visit. Tap the ✓ at the top of the app to open it.</p>
-            @if (installer.canInstall()) {
+            @if (installer.offerInstall()) {
               <p>Add the app to your home screen for one-tap ordering.</p>
             }
             <div class="actions">
-              @if (installer.canInstall()) {
+              @if (installer.offerInstall()) {
                 <button type="button" class="primary" data-testid="push-prompt-install" (click)="install()">Install the app</button>
               }
-              <button #primary type="button" [class.primary]="!installer.canInstall()" [class.secondary]="installer.canInstall()" (click)="close()">Continue</button>
+              <button #primary type="button" [class.primary]="!installer.offerInstall()" [class.secondary]="installer.offerInstall()" (click)="close()">Continue</button>
             </div>
+            @if (showInstallHelp()) {
+              <p class="install-help" data-testid="install-help" role="status">
+                In Chrome, tap <strong>⋮</strong> (top right), then <strong>Install app</strong> or <strong>Add to Home screen</strong>.
+              </p>
+            }
+
           }
         }
       </div>
@@ -197,6 +208,14 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
     li + li {
       margin-top: 6px;
     }
+    .install-help {
+      margin: 12px 0 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fff8ed;
+      color: #1f1814;
+      font-size: 0.9rem;
+    }
     .terms {
       margin: 12px 0 0;
       color: #9a8b83;
@@ -257,6 +276,7 @@ export class PushPrompt {
 
   protected readonly mode = signal<PromptMode>('hidden');
   protected readonly reward = STORE.pushReward;
+  protected readonly showInstallHelp = signal(false);
   /** Where Share is on this phone's browser, for the arrow and step 1 (see share-hint.ts). */
   protected readonly hint = signal<ShareHint>(shareHint({ userAgent: '', platform: '', maxTouchPoints: 0, landscape: false }));
 
@@ -292,6 +312,11 @@ export class PushPrompt {
   }
 
   protected async install(): Promise<void> {
+    // No one-tap install available (other Android browsers, or Chrome hasn't offered it): show the menu steps.
+    if (!this.installer.canInstall()) {
+      this.showInstallHelp.set(true);
+      return;
+    }
     await this.installer.install();
     // Installing does not replace the notification choice; the pop-up stays in its current step.
   }

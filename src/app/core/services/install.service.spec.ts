@@ -34,4 +34,13 @@ describe('InstallService', () => {
     const service = TestBed.inject(InstallService);
     await expect(service.install()).resolves.toBe(false);
   });
+
+  it('picks up an offer that arrived before the app started', () => {
+    const early = installEvent('accepted');
+    (window as Window & { __mmkInstallPrompt?: unknown }).__mmkInstallPrompt = early;
+    const service = TestBed.inject(InstallService);
+    service.listen();
+    expect(service.canInstall()).toBe(true);
+    (window as Window & { __mmkInstallPrompt?: unknown }).__mmkInstallPrompt = undefined;
+  });
 });
