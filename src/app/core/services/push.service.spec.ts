@@ -69,4 +69,17 @@ describe('PushService', () => {
     expect(service.enabled()).toBe(true);
     expect(service.message()).toBe('Offline');
   });
+  it('sends the signup phone with the device so the admin can target one phone', async () => {
+    localStorage.setItem('customer_phone', '+14085550123');
+    await service.initialize();
+    await service.enable();
+    const body = JSON.parse(fetchMock.mock.calls[1][1].body);
+    expect(body.phone).toBe('+14085550123');
+  });
+  it('sends no phone when this browser has not signed up', async () => {
+    await service.initialize();
+    await service.enable();
+    const body = JSON.parse(fetchMock.mock.calls[1][1].body);
+    expect(body.phone).toBeUndefined();
+  });
 });

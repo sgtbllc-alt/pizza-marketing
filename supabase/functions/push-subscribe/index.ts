@@ -18,8 +18,14 @@ serve(async req => {
   if (!validEndpoint(subscription?.endpoint) || !validKey(subscription?.keys?.p256dh, 65) || !validKey(subscription?.keys?.auth, 16)) {
     throw new HttpError(400, 'Unsupported or invalid push subscription.');
   }
+  // Optional, unverified customer phone from this browser's signup; used only for admin test sends.
+  // Only set when provided, so an iPhone Home Screen app (no phone in its storage) does not erase it.
+  if (input.phone != null && (typeof input.phone !== 'string' || !/^\+1\d{10}$/.test(input.phone))) {
+    throw new HttpError(400, 'Invalid phone number.');
+  }
   const values = { endpoint: subscription.endpoint, p256dh: subscription.keys.p256dh,
-    auth: subscription.keys.auth, updated_at: new Date().toISOString() };
+    auth: subscription.keys.auth, updated_at: new Date().toISOString(),
+    ...(input.phone ? { phone: input.phone } : {}) };
   const { data: saved, error } = existing
     ? await client.from('push_subscriptions').update(values).eq('id', input.deviceId).eq('device_secret_hash', hash)
       .select('created_at').single()

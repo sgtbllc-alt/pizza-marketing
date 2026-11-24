@@ -6,7 +6,7 @@ import { supabase } from '../supabase.client';
 import { PushStatusService } from './push-status.service';
 
 export interface PushResult { sent: number; failed: number; expired: number; nextCursor: string | null; }
-export interface PushMessage { title: string; message: string; audience: 'test' | 'all'; campaignId: string; cursor?: string; deviceId?: string; dealId?: string; callButton?: boolean; }
+export interface PushMessage { title: string; message: string; audience: 'test' | 'all' | 'one'; target?: string; campaignId: string; cursor?: string; deviceId?: string; dealId?: string; callButton?: boolean; }
 
 @Injectable({ providedIn: 'root' })
 export class PushService {
@@ -97,8 +97,12 @@ export class PushService {
     return device;
   }
   private async save(subscription: PushSubscription): Promise<void> {
-    const result = await this.request<{ enabledAt?: string | null }>('push-subscribe',
-      { ...this.device(), action: 'subscribe', subscription: subscription.toJSON() });
+    // Phone saved at signup in this browser (if any), so the admin can send a test to one number.
+    const phone = localStorage.getItem('customer_phone');
+    const result = await this.request<{ enabledAt?: string | null }>('push-subscribe', {
+      ...this.device(), action: 'subscribe', subscription: subscription.toJSON(),
+      ...(phone && /^\+1\d{10}$/.test(phone) ? { phone } : {}),
+    });
     this.status.record(result?.enabledAt);
   }
 
