@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Deal, DealInput } from '../models/deal.model';
-import { supabase } from '../supabase.client';
+import { publicSupabase, supabase } from '../supabase.client';
 
 export interface CampaignEntry {
   id?: string;
@@ -19,7 +19,7 @@ export class DealService {
   private readonly tableName = 'deals';
 
   async getActiveDeals(): Promise<Deal[]> {
-    const { data, error } = await supabase
+    const { data, error } = await publicSupabase
       .from(this.tableName)
       .select('*')
       .eq('active', true)
@@ -31,7 +31,7 @@ export class DealService {
 
   /** One deal by id, or null if it does not exist or is not visible. */
   async getDeal(id: string): Promise<Deal | null> {
-    const { data, error } = await supabase.from(this.tableName).select('*').eq('id', id).maybeSingle();
+    const { data, error } = await publicSupabase.from(this.tableName).select('*').eq('id', id).maybeSingle();
 
     if (error) throw error;
     return data ?? null;
@@ -72,8 +72,7 @@ export class DealService {
   }
 
   async getCustomerActiveCampaignEntries(phone: string): Promise<CampaignEntry[]> {
-    console.log('phone', phone)
-    const { data, error } = await supabase.rpc('get_customer_active_campaign_entries', {
+    const { data, error } = await publicSupabase.rpc('get_customer_active_campaign_entries', {
       p_phone: phone,
     });
 

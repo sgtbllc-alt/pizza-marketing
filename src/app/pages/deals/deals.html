@@ -17,13 +17,16 @@
     </address>
 
   
-    @if (customerPhone() && campaignEntriesStatus() !== 'error') {
+    @if (customerPhone()) {
       <section class="entries-card" aria-labelledby="entries-title">
         <div>
           <p class="entries-eyebrow">Your prize entries</p>
         </div>
         @if (campaignEntriesStatus() === 'loading') {
           <p>Loading your entries...</p>
+        } @else if (campaignEntriesStatus() === 'error') {
+          <p data-testid="entries-error">Couldn't load your entries right now.
+            <button type="button" class="retry-button" (click)="retry()">Try again</button></p>
         } @else if (campaignEntries().length === 0) {
           <p>No active prize entries yet. Qualifying orders can add bonus entries.</p>
         } @else {
@@ -45,7 +48,10 @@
     @if (status() === 'loading') {
       <p class="status-card">Loading deals...</p>
     } @else if (status() === 'error') {
-      <p class="status-card error">{{ statusMessage() }}</p>
+      <div class="status-card error">
+        <p>Couldn't load deals. {{ statusMessage() }}</p>
+        <button type="button" class="retry-button" data-testid="deals-retry" (click)="retry()">Try again</button>
+      </div>
     } @else if (deals().length === 0) {
       <p class="status-card">No active deals right now. Call us for today's specials.</p>
     } @else {
