@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { BLOG_POSTS } from '../../core/data/blog.data';
 import { STORE } from '../../core/data/store.data';
-import { SeoService, absoluteUrl } from '../../core/seo/seo.service';
+import { SeoService, pageUrl } from '../../core/seo/seo.service';
 import { SiteFooter } from '../../shared/site-footer';
 import { SiteHeader } from '../../shared/site-header';
 
@@ -30,11 +30,11 @@ export class BlogPage implements OnInit {
           '@context': 'https://schema.org',
           '@type': 'Blog',
           name: `${STORE.name} Blog`,
-          url: absoluteUrl('/blog'),
+          url: pageUrl('/blog'),
           blogPost: BLOG_POSTS.map((post) => ({
             '@type': 'BlogPosting',
             headline: post.title,
-            url: absoluteUrl(`/blog/${post.slug}`),
+            url: pageUrl(`/blog/${post.slug}`),
             datePublished: post.date,
           })),
         },

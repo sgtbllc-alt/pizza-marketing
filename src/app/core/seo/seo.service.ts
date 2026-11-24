@@ -28,7 +28,7 @@ export class SeoService {
   private readonly document = inject(DOCUMENT);
 
   set(page: PageSeo): void {
-    const url = absoluteUrl(page.path);
+    const url = pageUrl(page.path);
     const image = absoluteUrl(page.image ?? DEFAULT_IMAGE);
 
     this.title.setTitle(page.title);
@@ -84,6 +84,15 @@ export class SeoService {
   }
 }
 
+/**
+ * Public URL of a page. GitHub Pages serves pages as `<path>/index.html` and redirects
+ * `/home` to `/home/`, so page URLs end with a slash to match what is actually served.
+ */
+export function pageUrl(path: string): string {
+  const clean = `/${path.replace(/^\/+|\/+$/g, '')}`;
+  return `${STORE.siteUrl}${clean === '/' ? '/' : `${clean}/`}`;
+}
+
 export function absoluteUrl(pathOrUrl: string): string {
   if (/^https?:\/\//.test(pathOrUrl)) return pathOrUrl;
   return `${STORE.siteUrl}/${pathOrUrl.replace(/^\/+/, '')}`;
@@ -96,11 +105,11 @@ export function restaurantJsonLd(): object {
     '@type': 'Restaurant',
     '@id': `${STORE.siteUrl}/#restaurant`,
     name: STORE.name,
-    url: `${STORE.siteUrl}/home`,
+    url: pageUrl('/home'),
     image: absoluteUrl(DEFAULT_IMAGE),
     telephone: STORE.phoneE164,
     servesCuisine: 'Pizza',
-    hasMenu: `${STORE.siteUrl}/home#menu`,
+    hasMenu: `${pageUrl('/home')}#menu`,
     acceptsReservations: false,
     address: {
       '@type': 'PostalAddress',

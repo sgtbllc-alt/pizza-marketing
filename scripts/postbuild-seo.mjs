@@ -17,6 +17,15 @@ const SITE = store.match(/siteUrl:\s*'([^']+)'/)[1].replace(/\/$/, '');
 const shell = join(browser, 'index.csr.html');
 if (!existsSync(join(browser, 'index.html'))) copyFileSync(shell, join(browser, 'index.html'));
 copyFileSync(shell, join(browser, '404.html'));
+// Client-rendered routes get their own copy so GitHub Pages answers 200 instead of 404.
+const clientRoutes = ['deals', 'admin', 'admin-login', 'admin/add-order', 'admin/deals', 'admin/customers', 'admin/send-deal', 'admin/send-push'];
+for (const route of clientRoutes) {
+  const file = join(browser, route, 'index.html');
+  if (!existsSync(file)) {
+    mkdirSync(dirname(file), { recursive: true });
+    copyFileSync(shell, file);
+  }
+}
 
 // 2. Sitemap: client-rendered public pages + every pre-rendered page.
 const prerendered = Object.keys(JSON.parse(readFileSync(join(dist, 'prerendered-routes.json'), 'utf8')).routes);
@@ -32,7 +41,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 ${pages
   .map(
     (p) => `  <url>
-    <loc>${SITE}${p}</loc>
+    <loc>${SITE}${p === '/' ? '/' : `${p}/`}</loc>
     <lastmod>${postDates[p] ?? today}</lastmod>
     <priority>${priority(p)}</priority>
   </url>`,
@@ -65,7 +74,7 @@ for (const [from, to] of Object.entries(legacy)) {
   const file = join(browser, from, 'index.html');
   if (existsSync(file)) continue; // never overwrite a real page
   mkdirSync(dirname(file), { recursive: true });
-  const target = `${SITE}${to}`;
+  const target = `${SITE}${to}/`;
   writeFileSync(
     file,
     `<!doctype html>

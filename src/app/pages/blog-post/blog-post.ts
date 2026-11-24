@@ -7,7 +7,7 @@ import { map } from 'rxjs';
 import { BLOG_CONTENT } from '../../core/data/blog-content.data';
 import { BLOG_POSTS } from '../../core/data/blog.data';
 import { STORE } from '../../core/data/store.data';
-import { SeoService, absoluteUrl, restaurantJsonLd } from '../../core/seo/seo.service';
+import { SeoService, absoluteUrl, pageUrl, restaurantJsonLd } from '../../core/seo/seo.service';
 import { SiteFooter } from '../../shared/site-footer';
 import { SiteHeader } from '../../shared/site-header';
 
@@ -62,7 +62,7 @@ export class BlogPostPage {
             '@type': 'BlogPosting',
             headline: post.title,
             datePublished: post.date,
-            mainEntityOfPage: absoluteUrl(path),
+            mainEntityOfPage: pageUrl(path),
             ...(post.image ? { image: absoluteUrl(post.image) } : {}),
             author: { '@type': 'Organization', name: STORE.name },
             publisher: restaurantJsonLd(),

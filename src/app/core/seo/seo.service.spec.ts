@@ -18,8 +18,8 @@ describe('SeoService', () => {
 
     expect(doc.title).toBe('Test page');
     expect(doc.querySelector('meta[name="description"]')?.getAttribute('content')).toBe('About the test page');
-    expect(doc.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(`${STORE.siteUrl}/blog/test`);
-    expect(doc.querySelector('meta[property="og:url"]')?.getAttribute('content')).toBe(`${STORE.siteUrl}/blog/test`);
+    expect(doc.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(`${STORE.siteUrl}/blog/test/`);
+    expect(doc.querySelector('meta[property="og:url"]')?.getAttribute('content')).toBe(`${STORE.siteUrl}/blog/test/`);
     expect(doc.querySelector('meta[property="og:image"]')?.getAttribute('content')).toMatch(/^https:\/\//);
   });
 
