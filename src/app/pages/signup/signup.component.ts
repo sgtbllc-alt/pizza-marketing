@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { SeoService } from '../../core/seo/seo.service';
+import { PUSH_PROMPT_DISMISSED_KEY } from '../../shared/push-prompt';
 import { MarketingApiService } from '../../services/marketing-api.service';
 
 type SignupStatus = 'idle' | 'submitting' | 'success' | 'error';
@@ -72,6 +73,8 @@ export class SignupComponent implements OnInit {
         next: (response) => {
           localStorage.setItem('customer_signed_up', 'true');
           localStorage.setItem('customer_phone', normalizedPhone);
+          // A fresh signup should always be offered notifications on the next page.
+          localStorage.removeItem(PUSH_PROMPT_DISMISSED_KEY);
           this.status.set('success');
           this.statusMessage.set(response.message || 'You are signed up. Check your phone for a text from us.');
           this.signupForm.reset({ name: '', phone: '', smsConsent: false });

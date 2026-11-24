@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { SwPush } from '@angular/service-worker';
+import { of } from 'rxjs';
 
 import { MENU_ITEMS } from '../../core/data/menu.data';
 import { STORE } from '../../core/data/store.data';
@@ -13,7 +15,11 @@ describe('HomePage', () => {
   async function setup(): Promise<HTMLElement> {
     await TestBed.configureTestingModule({
       imports: [HomePage],
-      providers: [provideRouter([]), { provide: DealService, useValue: { getActiveDeals } }],
+      providers: [
+        provideRouter([]),
+        { provide: DealService, useValue: { getActiveDeals } },
+        { provide: SwPush, useValue: { isEnabled: false, subscription: of(null) } },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomePage);

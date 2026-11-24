@@ -7,12 +7,13 @@ import { BLOG_POSTS } from '../../core/data/blog.data';
 import { STORE } from '../../core/data/store.data';
 import { SeoService, restaurantJsonLd } from '../../core/seo/seo.service';
 import { DealService } from '../../core/services/deal.service';
+import { PushPrompt } from '../../shared/push-prompt';
 import { SiteFooter } from '../../shared/site-footer';
 import { SiteHeader } from '../../shared/site-header';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, SiteHeader, SiteFooter],
+  imports: [RouterLink, SiteHeader, SiteFooter, PushPrompt],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
