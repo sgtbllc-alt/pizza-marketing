@@ -31,11 +31,16 @@ describe('NotificationsPage', () => {
 
     expect(el.querySelector('[data-testid="push-status-on"]')).not.toBeNull();
     expect(el.querySelector('[data-testid="push-enabled-date"]')?.textContent).toContain('November 23, 2026');
+    // Turning off is a small link here, not the big card.
+    expect(el.querySelector('[data-testid="push-turn-off"]')).not.toBeNull();
+    expect(el.querySelector('[data-testid="push-opt-in"]')).toBeNull();
   });
 
   it('says notifications are off when there is no date', async () => {
     vi.stubGlobal('Notification', { permission: 'default' });
     const el = await render();
     expect(el.querySelector('[data-testid="push-status-off"]')).not.toBeNull();
+    expect(el.querySelector('[data-testid="push-turn-off"]')).toBeNull();
+    expect(el.querySelector('[data-testid="push-opt-in"]')).not.toBeNull();
   });
 });

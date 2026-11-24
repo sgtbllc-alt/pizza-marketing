@@ -14,7 +14,7 @@ import { PushOptIn } from '../../../shared/push-opt-in';
       <a routerLink="/admin">← Dashboard</a>
       <h1>Send push notification</h1>
       <p>Send an offer to devices that opted in. Tapping it opens the deal you pick below, or today's deals.</p>
-      <app-push-opt-in />
+      <app-push-opt-in [showWhenOn]="true" />
       <form (ngSubmit)="send('test')">
         <fieldset [disabled]="busy()">
           <label>Start with a deal (optional)

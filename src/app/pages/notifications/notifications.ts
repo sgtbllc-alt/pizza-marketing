@@ -4,6 +4,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { STORE } from '../../core/data/store.data';
 import { SeoService } from '../../core/seo/seo.service';
 import { PushStatusService } from '../../core/services/push-status.service';
+import { PushService } from '../../core/services/push.service';
 import { PushOptIn } from '../../shared/push-opt-in';
 import { SiteFooter } from '../../shared/site-footer';
 import { SiteHeader } from '../../shared/site-header';
@@ -29,6 +30,15 @@ import { SiteHeader } from '../../shared/site-header';
             }
           </div>
         </section>
+        <p class="turn-off">
+          <button type="button" class="link-button" data-testid="push-turn-off"
+            [disabled]="pushService.busy()" (click)="turnOff()">
+            {{ pushService.busy() ? 'Turning off…' : 'Turn off notifications on this device' }}
+          </button>
+        </p>
+        @if (pushService.message() && pushService.enabled()) {
+          <p class="turn-off-note" role="status">{{ pushService.message() }}</p>
+        }
       } @else {
         <section class="status-card off" data-testid="push-status-off">
           <span class="tick" aria-hidden="true">!</span>
@@ -99,10 +109,35 @@ import { SiteHeader } from '../../shared/site-header';
     .off .tick {
       background: #b2292e;
     }
+    .turn-off {
+      margin: 20px 16px 0;
+      text-align: center;
+    }
+    .link-button {
+      padding: 6px;
+      border: 0;
+      background: none;
+      color: #7b6b63;
+      font: inherit;
+      font-size: 0.85rem;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .link-button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .turn-off-note {
+      margin: 4px 16px 0;
+      color: #7b6b63;
+      font-size: 0.85rem;
+      text-align: center;
+    }
   `,
 })
 export class NotificationsPage implements OnInit {
   protected readonly push = inject(PushStatusService);
+  protected readonly pushService = inject(PushService);
   private readonly seo = inject(SeoService);
   protected readonly store = STORE;
   protected deviceCode: string | null = null;
@@ -116,5 +151,13 @@ export class NotificationsPage implements OnInit {
     });
     this.push.load();
     this.deviceCode = this.push.deviceCode();
+    // Needed so "Turn off" can reach this device's subscription.
+    void this.pushService.initialize();
+  }
+
+  protected async turnOff(): Promise<void> {
+    if (!confirm('Turn off deal notifications on this device?')) return;
+    await this.pushService.initialize();
+    await this.pushService.disable();
   }
 }

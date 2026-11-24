@@ -1,10 +1,12 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, input } from '@angular/core';
+import { PushStatusService } from '../core/services/push-status.service';
 import { PushService } from '../core/services/push.service';
 
 @Component({
   selector: 'app-push-opt-in',
   template: `
-    <section class="push-card" aria-label="Pizza deal notifications">
+    @if (!hidden()) {
+    <section class="push-card" aria-label="Pizza deal notifications" data-testid="push-opt-in">
       <h2>Get pizza deal notifications</h2>
       @if (push.needsHomeScreen) {
         <p>On iPhone or iPad, open this site in Safari, tap Share → Add to Home Screen, then open the new app icon to enable notifications. Requires iOS 16.4 or later.</p>
@@ -24,6 +26,7 @@ import { PushService } from '../core/services/push.service';
         @if (push.message()) { <p role="status">{{ push.message() }}</p> }
       }
     </section>
+    }
   `,
   styles: [`
     :host { display:block; max-width:720px; margin:24px auto; padding:0 16px; }
@@ -35,5 +38,13 @@ import { PushService } from '../core/services/push.service';
 })
 export class PushOptIn implements OnInit {
   protected readonly push = inject(PushService);
-  ngOnInit() { void this.push.initialize(); }
+  private readonly status = inject(PushStatusService);
+  /** Keep showing the card (with "Turn off") after notifications are on. Used on the admin send page. */
+  readonly showWhenOn = input(false);
+  /** Customers only see the card while it is useful: to turn notifications on. Turning off lives on /notifications. */
+  protected readonly hidden = computed(() => !this.showWhenOn() && (this.push.enabled() || this.status.enabledAt() !== null));
+  ngOnInit() {
+    this.status.load();
+    void this.push.initialize();
+  }
 }
