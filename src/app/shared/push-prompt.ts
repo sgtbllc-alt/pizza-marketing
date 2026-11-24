@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, PLATFORM_ID, afterNextRender, inject, signal, viewChild } from '@angular/core';
 
+import { STORE } from '../core/data/store.data';
 import { InstallService } from '../core/services/install.service';
 import { PushService } from '../core/services/push.service';
 
@@ -27,13 +28,20 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
   template: `
     @if (mode() !== 'hidden') {
       <div class="backdrop" (click)="dismiss()"></div>
-      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="push-prompt-title" data-testid="push-prompt">
-        <div class="icon" aria-hidden="true">🍕</div>
+      @if (mode() === 'install') {
+        <div class="hint-arrow" [class.ipad]="isIPad" aria-hidden="true" data-testid="share-arrow">
+          <span class="hint-label">Share is here</span>
+          <span class="hint-chevron">{{ isIPad ? '↑' : '↓' }}</span>
+        </div>
+      }
+      <div class="dialog" [class.top]="mode() === 'install'" role="dialog" aria-modal="true"
+        aria-labelledby="push-prompt-title" data-testid="push-prompt">
+        <div class="icon" aria-hidden="true">{{ reward.emoji }}</div>
 
         @switch (mode()) {
           @case ('ask') {
-            <h2 id="push-prompt-title">Get our deals first?</h2>
-            <p>Turn on notifications and we'll send you pizza specials and giveaway news. You can turn them off anytime.</p>
+            <h2 id="push-prompt-title">One tap to a {{ reward.short }}</h2>
+            <p>Turn on deal notifications and your next soda is on us. We'll also send you pizza specials first. Turn them off anytime.</p>
             @if (push.message()) {
               <p class="note" role="status">{{ push.message() }}</p>
             }
@@ -47,22 +55,36 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
               }
               <button type="button" class="secondary" (click)="dismiss()">Not now</button>
             </div>
+            <p class="terms">{{ reward.terms }}</p>
           }
           @case ('install') {
-            <h2 id="push-prompt-title">Get deal alerts on your iPhone</h2>
-            <p>Apple only allows notifications from apps on your Home Screen. It takes 10 seconds:</p>
-            <ol>
-              <li>In Safari, tap the <strong>Share</strong> button <span aria-hidden="true">(□↑)</span>. It may be under the <strong>…</strong> menu.</li>
-              <li>Choose <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li>
-              <li>Open the new <strong>pizza icon</strong> and tap <strong>Turn on notifications</strong>.</li>
+            <h2 id="push-prompt-title">3 steps to a {{ reward.short }}</h2>
+            <p>Add us to your Home Screen and turn on deal alerts. Takes 10 seconds:</p>
+            <ol class="steps">
+              <li>
+                <span>Tap <strong>Share</strong></span>
+                <span class="chip"><svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <small>{{ isIPad ? 'Top right of Safari.' : 'Bottom of Safari. On newer iPhones, tap ••• first.' }}</small>
+              </li>
+              <li>
+                <span>Tap</span>
+                <span class="menu-row" aria-hidden="true"><span>Add to Home Screen</span><span class="plus-box">+</span></span>
+                <small>Scroll down in the Share menu if you don't see it. Then tap <strong>Add</strong>.</small>
+              </li>
+              <li>
+                <span>Open the new <strong>pizza icon</strong></span>
+                <img class="app-icon" src="icons/icon-96x96.png" alt="" width="40" height="40" />
+                <small>Then tap <strong>Turn on notifications</strong>.</small>
+              </li>
             </ol>
+            <p class="terms">{{ reward.terms }}</p>
             <div class="actions">
               <button #primary type="button" class="primary" (click)="dismiss()">Got it</button>
             </div>
           }
           @case ('done') {
-            <h2 id="push-prompt-title">You're all set!</h2>
-            <p>We'll let you know when new pizza deals drop.</p>
+            <h2 id="push-prompt-title">Your {{ reward.short }} is unlocked!</h2>
+            <p>Show the green <strong class="tick-inline">✓</strong> page at the counter on your next visit. Tap the ✓ at the top of the app to open it.</p>
             @if (installer.canInstall()) {
               <p>Add the app to your home screen for one-tap ordering.</p>
             }
@@ -108,6 +130,143 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
         transform: translate(-50%, -50%);
       }
     }
+    .dialog.top {
+      top: max(12px, env(safe-area-inset-top));
+      bottom: auto;
+      transform: translateX(-50%);
+      max-height: calc(100dvh - 120px);
+    }
+    .steps {
+      display: grid;
+      gap: 12px;
+      padding: 0;
+      list-style: none;
+      counter-reset: step;
+    }
+    .steps li {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      grid-template-areas: 'num text pic' 'num note note';
+      align-items: center;
+      column-gap: 10px;
+      row-gap: 2px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #fff8ed;
+      text-align: left;
+      counter-increment: step;
+    }
+    .steps li::before {
+      content: counter(step);
+      grid-area: num;
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #004438;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 900;
+    }
+    .steps li > span:first-of-type {
+      grid-area: text;
+      color: #1f1814;
+    }
+    .steps small {
+      grid-area: note;
+      color: #7b6b63;
+      font-size: 0.8rem;
+    }
+    .chip,
+    .menu-row,
+    .app-icon {
+      grid-area: pic;
+    }
+    .chip {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      background: #fff;
+      color: #007aff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+    .share-icon {
+      width: 22px;
+      height: 22px;
+    }
+    .menu-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px 6px 10px;
+      border-radius: 8px;
+      background: #fff;
+      color: #1f1814;
+      font-size: 0.78rem;
+      white-space: nowrap;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+    .plus-box {
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid #1f1814;
+      border-radius: 4px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .app-icon {
+      border-radius: 9px;
+    }
+    .hint-arrow {
+      position: fixed;
+      z-index: 1002;
+      left: 50%;
+      bottom: max(6px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      display: grid;
+      justify-items: center;
+      color: #fff;
+      font-weight: 900;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+      animation: nudge-down 1s ease-in-out infinite;
+    }
+    .hint-arrow.ipad {
+      top: 8px;
+      right: 70px;
+      bottom: auto;
+      left: auto;
+      transform: none;
+      animation-name: nudge-up;
+    }
+    .hint-arrow.ipad .hint-chevron {
+      order: -1;
+    }
+    .hint-label {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #b2292e;
+      font-size: 0.85rem;
+      text-shadow: none;
+    }
+    .hint-chevron {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+    @keyframes nudge-down {
+      50% { translate: 0 8px; }
+    }
+    @keyframes nudge-up {
+      50% { translate: 0 -8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hint-arrow { animation: none; }
+    }
     .icon {
       font-size: 2.4rem;
       line-height: 1;
@@ -129,6 +288,22 @@ type PromptMode = 'hidden' | 'ask' | 'install' | 'done';
     }
     li + li {
       margin-top: 6px;
+    }
+    .terms {
+      margin: 12px 0 0;
+      color: #9a8b83;
+      font-size: 0.72rem;
+      line-height: 1.35;
+    }
+    .tick-inline {
+      display: inline-grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #2fb36d;
+      color: #fff;
+      font-size: 0.7rem;
     }
     .note {
       color: #b2292e;
@@ -173,6 +348,9 @@ export class PushPrompt {
   private readonly primary = viewChild<ElementRef<HTMLButtonElement>>('primary');
 
   protected readonly mode = signal<PromptMode>('hidden');
+  protected readonly reward = STORE.pushReward;
+  /** iPad Safari has Share at the top right; iPhone at the bottom. */
+  protected isIPad = false;
 
   constructor() {
     // Browser-only: reads localStorage and push capabilities. Never runs while pre-rendering.
@@ -183,6 +361,7 @@ export class PushPrompt {
     if (!this.isBrowser || !shouldOffer()) return;
 
     if (this.push.needsHomeScreen) {
+      this.isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       this.open('install');
       return;
     }

@@ -30,6 +30,9 @@ import { SiteHeader } from '../../shared/site-header';
             }
           </div>
         </section>
+        <p class="reward" data-testid="push-reward">{{ store.pushReward.emoji }} Show this screen at the counter for your
+          <strong>{{ store.pushReward.short }}</strong>.</p>
+        <p class="reward-terms">{{ store.pushReward.terms }}</p>
         <p class="turn-off">
           <button type="button" class="link-button" data-testid="push-turn-off"
             [disabled]="pushService.busy()" (click)="turnOff()">
@@ -108,6 +111,24 @@ import { SiteHeader } from '../../shared/site-header';
     }
     .off .tick {
       background: #b2292e;
+    }
+    .reward {
+      margin: 16px 16px 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #004438;
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+    }
+    .reward strong {
+      color: #f5d93f;
+    }
+    .reward-terms {
+      margin: 6px 16px 0;
+      color: #9a8b83;
+      font-size: 0.75rem;
+      text-align: center;
     }
     .turn-off {
       margin: 20px 16px 0;

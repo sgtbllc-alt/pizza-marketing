@@ -2,9 +2,12 @@
 //   index.html / 404.html  – app shell for client-rendered routes (GitHub Pages serves 404.html for unknown paths)
 //   robots.txt, sitemap.xml
 //   <old-wordpress-path>/index.html – redirect pages so old links and search results land on the new pages
+//   poster.html – printable in-store QR poster
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { makePoster } from './make-poster.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist/pizza-marketing');
@@ -94,4 +97,7 @@ for (const [from, to] of Object.entries(legacy)) {
   redirects++;
 }
 
-console.log(`postbuild-seo: ${pages.length} sitemap URLs, ${redirects} legacy redirects, site ${SITE}`);
+// 5. Printable in-store poster with a QR code to signup.
+const posterTarget = await makePoster(root, browser);
+
+console.log(`postbuild-seo: ${pages.length} sitemap URLs, ${redirects} legacy redirects, poster → ${posterTarget}, site ${SITE}`);

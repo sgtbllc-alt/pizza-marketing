@@ -52,14 +52,14 @@ describe('PushPrompt', () => {
     const push = fakePush();
     const { el, fixture } = await render(push);
 
-    expect(el.querySelector('[data-testid="push-prompt"]')?.textContent).toContain('Get our deals first?');
+    expect(el.querySelector('[data-testid="push-prompt"]')?.textContent).toContain('One tap to a FREE soda');
 
     el.querySelector<HTMLButtonElement>('[data-testid="push-prompt-enable"]')!.click();
     await fixture.whenStable();
     fixture.detectChanges();
 
     expect(push.enable).toHaveBeenCalledTimes(1);
-    expect(el.textContent).toContain("You're all set!");
+    expect(el.textContent).toContain('Your FREE soda is unlocked!');
   });
 
   it('shows Home Screen steps on iPhone Safari instead of asking for permission', async () => {
@@ -67,6 +67,7 @@ describe('PushPrompt', () => {
     const push = fakePush({ needsHomeScreen: true });
     const { el } = await render(push);
 
+    expect(el.textContent).toContain('3 steps to a FREE soda');
     expect(el.textContent).toContain('Add to Home Screen');
     expect(push.initialize).not.toHaveBeenCalled();
     expect(el.querySelector('[data-testid="push-prompt-enable"]')).toBeNull();

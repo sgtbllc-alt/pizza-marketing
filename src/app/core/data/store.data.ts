@@ -15,4 +15,11 @@ export const STORE = {
   heroHeading: "Best Pizza in San Jose – Mountain Mike's Pizza",
   heroSubtext: 'Tikka Masala, Custom Request, Specials for Parties, Catering, Fundraising support',
   promoFallback: 'Unlock 30% OFF Now!',
+  /** Reward for turning on notifications. Shown in the pop-up, the status page and the in-store poster. */
+  pushReward: {
+    short: 'FREE soda',
+    emoji: '🥤',
+    /** Small print. Change to match how the store honours the offer. */
+    terms: 'One free fountain soda per customer with any purchase. Show the green ✓ notification page at the counter.',
+  },
 } as const;
