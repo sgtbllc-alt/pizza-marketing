@@ -17,8 +17,38 @@
   margin: 0 auto;
 }
 
-.eyebrow {
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin: 0 0 10px;
+}
+
+.logout-button {
+  padding: 8px 14px;
+  border: 1px solid rgba(36, 26, 23, 0.2);
+  border-radius: 8px;
+  background: #fff;
+  color: #b03f2f;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 4px solid rgba(176, 63, 47, 0.25);
+    outline-offset: 2px;
+  }
+}
+
+.eyebrow {
+  margin: 0;
   color: #b03f2f;
   font-size: 0.78rem;
   font-weight: 800;

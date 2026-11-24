@@ -1,6 +1,11 @@
 <main class="admin-page">
   <section class="admin-shell" aria-labelledby="admin-title">
-    <p class="eyebrow">Admin</p>
+    <div class="admin-topbar">
+      <p class="eyebrow">Admin</p>
+      <button type="button" class="logout-button" data-testid="admin-logout" [disabled]="loggingOut()" (click)="logout()">
+        {{ loggingOut() ? 'Logging out…' : 'Log out' }}
+      </button>
+    </div>
     <h1 id="admin-title">Dashboard</h1>
     <p class="intro">Choose a tool to manage orders and offers.</p>
 

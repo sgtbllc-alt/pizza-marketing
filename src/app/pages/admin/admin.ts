@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+
+import { AdminAuthService } from '../../core/services/admin-auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -8,6 +10,23 @@ import { RouterLink } from '@angular/router';
   styleUrl: './admin.scss',
 })
 export class Admin {
+  private readonly adminAuth = inject(AdminAuthService);
+  private readonly router = inject(Router);
+
+  protected readonly loggingOut = signal(false);
+
+  protected async logout(): Promise<void> {
+    if (this.loggingOut()) return;
+    this.loggingOut.set(true);
+    try {
+      await this.adminAuth.logout();
+    } finally {
+      // Leave the admin area even if the network call fails; the guard re-checks the session.
+      this.loggingOut.set(false);
+      void this.router.navigate(['/admin-login']);
+    }
+  }
+
   protected readonly adminCards = [
     { title: 'Send push notification', description: 'Send pizza offers to subscribed devices.', link: '/admin/send-push', action: 'Send notification' },
     {
