@@ -320,7 +320,17 @@ export class PushPrompt {
 }
 
 function shouldOffer(): boolean {
-  if (localStorage.getItem('customer_signed_up') !== 'true') return false;
+  // iPhone Home Screen apps have their own storage, so the signup flag from Safari is missing there.
+  // Anyone who opened the installed app followed our steps, so offer it to them too.
+  if (localStorage.getItem('customer_signed_up') !== 'true' && !isInstalledApp()) return false;
   const dismissedAt = Number(localStorage.getItem(PUSH_PROMPT_DISMISSED_KEY) ?? 0);
   return !dismissedAt || Date.now() - dismissedAt > REASK_AFTER_MS;
+}
+
+/** True when running as an installed / Home Screen app rather than in a browser tab. */
+function isInstalledApp(): boolean {
+  return (
+    (typeof matchMedia === 'function' && matchMedia('(display-mode: standalone)').matches) ||
+    (navigator as Navigator & { standalone?: boolean }).standalone === true
+  );
 }

@@ -118,4 +118,11 @@ describe('PushPrompt', () => {
     const noInstall = await render(fakePush(), fakeInstaller(false));
     expect(noInstall.el.querySelector('[data-testid="push-prompt-install"]')).toBeNull();
   });
+
+  it('asks in the installed app even without the Safari signup flag (iPhone Home Screen apps have separate storage)', async () => {
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: q === '(display-mode: standalone)' }));
+    const { el } = await render(fakePush());
+    expect(el.querySelector('[data-testid="push-prompt"]')?.textContent).toContain('One tap to a FREE soda');
+    vi.unstubAllGlobals();
+  });
 });
