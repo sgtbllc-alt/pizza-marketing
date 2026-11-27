@@ -75,15 +75,16 @@
       </label>
 
       <label class="consent">
-        <input type="checkbox" formControlName="smsConsent" />
+        <input type="checkbox" formControlName="smsConsent" data-testid="sms-consent" />
         <span>
-          Yes! Send me pizza deals, giveaway entries, and special offers by text.
-          <small class="sms-note">Msg &amp; data rates may apply. Reply STOP to unsubscribe.</small>
+          Yes, text me pizza deals and giveaway updates from Mountain Mike's Pizza (4116 Monterey Rd, San Jose).
+          <small class="sms-note" data-testid="sms-disclosure">
+            Optional. Consent is not a condition of purchase. Message frequency varies. Msg &amp; data rates may apply.
+            Reply HELP for help, STOP to cancel.
+            <a routerLink="/sms-terms">SMS Terms</a> · <a routerLink="/privacy">Privacy Policy</a>
+          </small>
         </span>
       </label>
-      @if (hasError('smsConsent')) {
-        <small class="consent-error">SMS consent is required.</small>
-      }
 
       <button type="submit" [disabled]="isSubmitting()">
         @if (isSubmitting()) {

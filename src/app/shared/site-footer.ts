@@ -16,6 +16,8 @@ import { STORE } from '../core/data/store.data';
       <div class="links">
         <a routerLink="/deals">See today's deals</a>
         <a routerLink="/blog">Read our blog</a>
+        <a routerLink="/sms-terms">SMS Terms</a>
+        <a routerLink="/privacy">Privacy Policy</a>
       </div>
       <small>© {{ year }} {{ store.name }}</small>
     </footer>

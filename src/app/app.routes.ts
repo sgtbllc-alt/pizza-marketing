@@ -17,6 +17,16 @@ export const routes: Routes = [
   { path: '', component: SignupComponent },
   { path: 'deals', component: DealsPage },
   {
+    path: 'privacy',
+    loadComponent: () => import('./pages/legal/legal').then((m) => m.LegalPage),
+    data: { doc: 'privacy' },
+  },
+  {
+    path: 'sms-terms',
+    loadComponent: () => import('./pages/legal/legal').then((m) => m.LegalPage),
+    data: { doc: 'sms-terms' },
+  },
+  {
     path: 'deals/:id',
     loadComponent: () => import('./pages/deal-detail/deal-detail').then((m) => m.DealDetailPage),
   },

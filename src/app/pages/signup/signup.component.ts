@@ -1,7 +1,7 @@
 import { PushOptIn } from '../../shared/push-opt-in';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { SeoService } from '../../core/seo/seo.service';
 import { PUSH_PROMPT_DISMISSED_KEY } from '../../shared/push-prompt';
@@ -11,7 +11,7 @@ type SignupStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 @Component({
   selector: 'app-signup',
-  imports: [ReactiveFormsModule, PushOptIn],
+  imports: [ReactiveFormsModule, PushOptIn, RouterLink],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })
@@ -28,7 +28,8 @@ export class SignupComponent implements OnInit {
   protected readonly signupForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     phone: ['', [Validators.required, Validators.pattern(/^\+?[0-9 ()-]{10,20}$/)]],
-    smsConsent: [false, [Validators.requiredTrue]],
+    // Texting is opt-in and optional: carriers reject SMS consent that is required to sign up.
+    smsConsent: [false],
   });
 
   ngOnInit(): void {
@@ -76,7 +77,7 @@ export class SignupComponent implements OnInit {
           // A fresh signup should always be offered notifications on the next page.
           localStorage.removeItem(PUSH_PROMPT_DISMISSED_KEY);
           this.status.set('success');
-          this.statusMessage.set(response.message || 'You are signed up. Check your phone for a text from us.');
+          this.statusMessage.set(response.message || (smsConsent ? 'You are signed up. Check your phone for a text from us.' : 'You are signed up.'));
           this.signupForm.reset({ name: '', phone: '', smsConsent: false });
           void this.router.navigate(['/home']);
         },
@@ -87,7 +88,7 @@ export class SignupComponent implements OnInit {
       });
   }
 
-  protected hasError(controlName: 'name' | 'phone' | 'smsConsent'): boolean {
+  protected hasError(controlName: 'name' | 'phone'): boolean {
     const control = this.signupForm.controls[controlName];
 
     return control.invalid && (control.dirty || control.touched);

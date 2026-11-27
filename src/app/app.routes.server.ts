@@ -10,6 +10,8 @@ import { BLOG_POSTS } from './core/data/blog.data';
 export const serverRoutes: ServerRoute[] = [
   { path: 'home', renderMode: RenderMode.Prerender },
   { path: 'blog', renderMode: RenderMode.Prerender },
+  { path: 'privacy', renderMode: RenderMode.Prerender },
+  { path: 'sms-terms', renderMode: RenderMode.Prerender },
   {
     path: 'blog/:slug',
     renderMode: RenderMode.Prerender,

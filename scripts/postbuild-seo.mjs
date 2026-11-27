@@ -37,7 +37,7 @@ const postDates = Object.fromEntries(
   [...blogData.matchAll(/"slug":\s*"([^"]+)",[\s\S]*?"date":\s*"([^"]+)"/g)].map((m) => [`/blog/${m[1]}`, m[2]]),
 );
 const today = new Date().toISOString().slice(0, 10);
-const pages = [...new Set(['/', '/home', '/deals', '/blog', ...prerendered])];
+const pages = [...new Set(['/', '/home', '/deals', '/blog', '/privacy', '/sms-terms', ...prerendered])];
 const priority = (p) => (p === '/home' ? '1.0' : p === '/' || p === '/blog' ? '0.8' : p.startsWith('/blog/') ? '0.6' : '0.7');
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
