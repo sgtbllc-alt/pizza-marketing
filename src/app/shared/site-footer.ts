@@ -19,7 +19,7 @@ import { STORE } from '../core/data/store.data';
         <a routerLink="/sms-terms">SMS Terms</a>
         <a routerLink="/privacy">Privacy Policy</a>
       </div>
-      <small>© {{ year }} {{ store.name }}</small>
+      <small>© {{ year }} {{ store.name }} · Operated by {{ store.legalName }}</small>
     </footer>
   `,
   styles: `

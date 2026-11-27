@@ -26,5 +26,6 @@ describe('LegalPage', () => {
     const text = await render('privacy');
     expect(text).toContain('No mobile information will be shared with third parties or affiliates');
     expect(text).toContain('opt-in data and consent are not shared');
+    expect(text).toContain('SGTB LLC');
   });
 });

@@ -3,6 +3,8 @@ export const STORE = {
   siteUrl: 'https://mountainmikes-southsj.com',
   name: "Mountain Mike's Pizza, San Jose",
   shortName: "Mountain Mike's San Jose",
+  /** Registered business that operates this franchise location. Must match the SMS (Twilio) registration exactly. */
+  legalName: 'SGTB LLC',
   address: '4116 Monterey Road, San Jose, CA 95111',
   streetAddress: '4116 Monterey Road',
   city: 'San Jose',

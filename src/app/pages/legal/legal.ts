@@ -20,7 +20,7 @@ export type LegalDoc = 'privacy' | 'sms-terms';
         <p class="updated">Last updated: {{ updated }}</p>
 
         <h2>Program</h2>
-        <p>{{ store.name }} ({{ store.address }}) sends recurring text messages with pizza deals, specials,
+        <p>{{ store.name }} ({{ store.address }}), operated by {{ store.legalName }}, sends recurring text messages with pizza deals, specials,
           giveaway and prize-entry updates, and store news to customers who sign up.</p>
 
         <h2>How you join</h2>
@@ -49,7 +49,8 @@ export type LegalDoc = 'privacy' | 'sms-terms';
         <h1>Privacy Policy</h1>
         <p class="updated">Last updated: {{ updated }}</p>
 
-        <p>This policy explains what {{ store.name }} ({{ store.address }}) collects through
+        <p>This policy explains what {{ store.legalName }}, which operates {{ store.name }} ({{ store.address }}),
+          collects through
           {{ siteHost }} and how we use it.</p>
 
         <h2>What we collect</h2>
@@ -89,7 +90,7 @@ export type LegalDoc = 'privacy' | 'sms-terms';
         </ul>
 
         <h2>Contact</h2>
-        <p>{{ store.name }}, {{ store.address }} ·
+        <p>{{ store.legalName }} (operating {{ store.name }}), {{ store.address }} ·
           <a [href]="store.phoneHref">{{ store.phoneDisplay }}</a></p>
       }
     </main>
